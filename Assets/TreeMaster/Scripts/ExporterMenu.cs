@@ -36,22 +36,10 @@ namespace UnityFBXExporter
     public class ExporterMenu : Editor
     {
 
-        [MenuItem("Tools/TreeMaster/FBX Export/Only GameObject", false, 31)]
+        [MenuItem("Tools/TreeMaster/Export FBX", false, 31)]
         public static void ExportGameObjectToFBX()
         {
             ExportCurrentGameObject(false, false);
-        }
-
-        [MenuItem("Tools/TreeMaster/FBX Export/With new Materials", false, 32)]
-        public static void ExportGameObjectAndMaterialsToFBX()
-        {
-            ExportCurrentGameObject(true, false);
-        }
-
-        [MenuItem("Tools/TreeMaster/FBX Export/With new Materials and Textures", false, 33)]
-        public static void ExportGameObjectAndMaterialsTexturesToFBX()
-        {
-            ExportCurrentGameObject(true, true);
         }
 
         private static void ExportCurrentGameObject(bool copyMaterials, bool copyTextures)

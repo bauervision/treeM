@@ -4,5 +4,15 @@ Library/
 Logs/
 ProjectSettings/
 Temp/
-
+Assets/SourceTrees/
+Assets/Exports/
+Assets/TreeMaster/Exports/
+Assets/TreeMaster/Resources/Materials/
+Assets/BOX*
+Assets/SSS/
+Assets/Amplify*
+Assets/_Terrain*
 *.meta
+
+*.psb
+*.psd
