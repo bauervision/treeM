@@ -66,8 +66,9 @@ public class TM_ChangeMesh : EditorWindow
     string newExtraMeshName = extrasStarter;
     private float leafScale = 1, oldLeafScale = 1;
     private float trunkScale = 1, oldTrunkScale = 1;
-    private float extrasScale = 1, oldExtrasScale = 1;
-    private float finalScale = 1, oldFinalScale = 1;
+    private float ivyScale = 1, oldIvyScale = 1;
+    private float vineScale = 1, oldVineScale = 1;
+
 
     int trunkMeshOptions = 3;
     int trunkBarkOptions = 3;
@@ -79,7 +80,7 @@ public class TM_ChangeMesh : EditorWindow
     int foliageVarietyOptions = 16;
     int foliageSeasonalOptions = 4;
     int foliageAgeOptions = 4;
-    float foliageMaxScale = 5f;
+    float foliageMaxScale = 20f;
 
     int extraIvyOptions = 4;
     int extraIvyVarietyOptions = 4;
@@ -89,6 +90,7 @@ public class TM_ChangeMesh : EditorWindow
 
 
     Vector2 scrollPos;
+
     public static void ShowWindow()
     {
         EditorWindow editorWindow = EditorWindow.GetWindow(typeof(TM_ChangeMesh));
@@ -107,15 +109,16 @@ public class TM_ChangeMesh : EditorWindow
         EditorGUILayout.Space();
         if (Selection.activeGameObject)
         {
-            MeshFilter selMf = Selection.activeGameObject.transform.GetComponent<MeshFilter>();
-            if (selMf)
+            // final verification that they are selected on the right thing
+
+            // verify that we are selected on A TreeMaster Mesh before running any of the following methods
+            if (Selection.activeGameObject.name != "TreeMaster")
             {
-                // verify that we are selected on A TreeMaster Mesh before running any of the following methods
-                if (!isTreeMasterMesh())
-                {
-                    GUILayout.Label("Not a TreeMaster Mesh", EditorStyles.boldLabel);
-                    EditorGUILayout.Space();
-                }
+                GUILayout.Label("Not a TreeMaster Mesh", EditorStyles.boldLabel);
+                EditorGUILayout.Space();
+            }
+            else
+            {
 
                 EditorGUILayout.Space();
                 GUILayout.Label("Trunk:", EditorStyles.boldLabel);
@@ -149,24 +152,27 @@ public class TM_ChangeMesh : EditorWindow
                 EditorGUILayout.Space();
 
                 GUILayout.Label("Extras:", EditorStyles.boldLabel);
-                GUILayout.Label(newExtraMeshName + " " + oldExtrasScale + "%", EditorStyles.label);
+                GUILayout.Label(newExtraMeshName, EditorStyles.label);
                 EditorGUILayout.Space();
                 ivy = EditorGUILayout.IntSlider("Ivy Mesh", ivy, 0, extraIvyOptions);//changes mesh option
                 SwitchIvy(ivy);
                 ivyVariety = EditorGUILayout.IntSlider("Ivy Look", ivyVariety, 1, extraIvyVarietyOptions);// changes UV
                 SwitchIvyVariety(ivyVariety);
+                ivyScale = EditorGUILayout.Slider("Ivy Scale", ivyScale, 0.2f, extraMaxScale);//scaling
+                ScaleIvy(ivyScale);
+
                 vines = EditorGUILayout.IntSlider("Vine Mesh", vines, 0, extraVineOptions);//changes mesh option
                 SwitchVines(vines);
                 vineVariety = EditorGUILayout.IntSlider("Vine Look", vineVariety, 1, extraVineyVarietyOptions);// changes UV
                 SwitchVineVariety(vineVariety);
-                extrasScale = EditorGUILayout.Slider("Extras Scale", extrasScale, 0.2f, extraMaxScale);//scaling
-                ScaleExtras(extrasScale);
+
+                vineScale = EditorGUILayout.Slider("Vine Scale", vineScale, 0.2f, extraMaxScale);//scaling
+                ScaleVine(vineScale);
                 EditorGUILayout.Space();
 
                 GUILayout.Label("Export", EditorStyles.boldLabel);
                 EditorGUILayout.Space();
-                finalScale = EditorGUILayout.Slider("Final Scaling: " + oldFinalScale + "%", finalScale, 0.2f, 25);
-                ScaleFinal(finalScale);
+
                 EditorGUILayout.Space();
                 GUILayout.Label("Exported tree will be located in /TreeMaster/Exports/", EditorStyles.wordWrappedLabel);
 
@@ -179,10 +185,7 @@ public class TM_ChangeMesh : EditorWindow
 
                 GUILayout.Label("Exported tree will be located in /TreeMaster/Exports/", EditorStyles.wordWrappedLabel);
             }
-            else
-            {
-                GUILayout.Label("No Mesh Filter on Selected", EditorStyles.boldLabel);
-            }
+
         }
         else
         {
@@ -201,8 +204,9 @@ public class TM_ChangeMesh : EditorWindow
 
         leafScale = 1; oldLeafScale = 1;
         trunkScale = 1; oldTrunkScale = 1;
-        extrasScale = 1; oldExtrasScale = 1;
-        finalScale = 1; oldFinalScale = 1;
+        ivyScale = 1; oldIvyScale = 1;
+        vineScale = 1; oldVineScale = 1;
+
 
         leafMesh = 1; variety = 1; seasonal = 1; age = 1; varietyOld = 1; seasonalOld = 1; ageOld = 1; leafMeshOld = 1;
         trunk = 1; roots = 0; bark = 1; lichen = 0; trunkOld = 1; rootsOld = 0; barkOld = 1; lichenOld = 0;
@@ -213,27 +217,29 @@ public class TM_ChangeMesh : EditorWindow
     {
         Debug.Log("Export Trunk Mesh: " + newTrunkMeshName + " scaled: " + oldTrunkScale + "%");
         Debug.Log("Export Foliage Mesh: " + newFoliageMeshName + " scaled: " + oldLeafScale + "%");
-        Debug.Log("Export Extra Mesh: " + newExtraMeshName + " scaled: " + oldExtrasScale + "%");
-        Debug.Log("Final Scaling: " + oldFinalScale + "%");
+        Debug.Log("Export Extra Mesh: " + newExtraMeshName);
+
 
     }
 
     #region Scaling
-    private void ScaleFinal(float finalScaleValue)
+
+
+    private void ScaleIvy(float ivyScaleValue)
     {
-        if (oldFinalScale != finalScaleValue)
+        if (oldIvyScale != ivyScaleValue)
         {
-            Selection.activeGameObject.transform.localScale = new Vector3(finalScaleValue, finalScaleValue, finalScaleValue);
-            oldFinalScale = finalScaleValue;
+            Selection.activeGameObject.transform.GetChild(0).transform.GetChild(2).transform.localScale = new Vector3(ivyScaleValue, ivyScaleValue, ivyScaleValue);
+            oldIvyScale = ivyScaleValue;
         }
     }
 
-    private void ScaleExtras(float extrasScaleValue)
+    private void ScaleVine(float vineScaleValue)
     {
-        if (oldExtrasScale != extrasScaleValue)
+        if (oldVineScale != vineScaleValue)
         {
-
-            oldExtrasScale = extrasScaleValue;
+            Selection.activeGameObject.transform.GetChild(0).transform.GetChild(1).transform.localScale = new Vector3(vineScaleValue, vineScaleValue, vineScaleValue);
+            oldVineScale = vineScaleValue;
         }
     }
 
@@ -241,7 +247,7 @@ public class TM_ChangeMesh : EditorWindow
     {
         if (oldTrunkScale != trunkScaleValue)
         {
-
+            Selection.activeGameObject.transform.GetChild(0).transform.localScale = new Vector3(trunkScaleValue, trunkScaleValue, trunkScaleValue);
             oldTrunkScale = trunkScaleValue;
         }
     }
@@ -250,10 +256,13 @@ public class TM_ChangeMesh : EditorWindow
     {
         if (oldLeafScale != leafScaleValue)
         {
+            for (int i = 0; i < Selection.activeGameObject.transform.GetChild(0).transform.GetChild(0).transform.childCount; i++)
+                Selection.activeGameObject.transform.GetChild(0).transform.GetChild(0).transform.GetChild(i).transform.localScale = new Vector3(leafScaleValue, leafScaleValue, leafScaleValue);
 
             oldLeafScale = leafScaleValue;
         }
     }
+
     #endregion
 
     #region Foliage
@@ -402,19 +411,7 @@ public class TM_ChangeMesh : EditorWindow
     }
 
 
-    private bool isTreeMasterMesh()
-    {
-        return (GetFoliageType("T!L") || GetFoliageType("T!K") || GetFoliageType("T!X"));
-    }
 
-
-    ///<summary>Check to see if the passed string matches what the meshfilter mesh name starts with. </summary>
-    private bool GetFoliageType(string nameCompare)
-    {
-        if (Selection.activeGameObject.transform.GetComponent<MeshFilter>() != null)
-            return Selection.activeGameObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith(nameCompare);
-        else return false;
-    }
 
 
     private void SwitchSpecies(GameObject thisGameObject, int newSpecies)
