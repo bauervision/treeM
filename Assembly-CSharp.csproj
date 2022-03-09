@@ -36,17 +36,17 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets\TreeMaster\Scripts\ExporterMenu.cs" />
      <Compile Include="Assets\TreeMaster\Scripts\TM_Renamer.cs" />
-     <Compile Include="Assets\TreeMaster\Scripts\FBXUnityMeshGetter.cs" />
-     <Compile Include="Assets\TreeMaster\Scripts\TM_Prefabber.cs" />
-     <Compile Include="Assets\TreeMaster\Scripts\TM_ChangeMesh.cs" />
-     <Compile Include="Assets\TreeMaster\Scripts\TM_MenuItem.cs" />
-     <Compile Include="Assets\TreeMaster\Scripts\TM_Screenshots.cs" />
      <Compile Include="Assets\TreeMaster\Scripts\FBXExporter.cs" />
-     <Compile Include="Assets\TreeMaster\Scripts\FBXUnityMaterialGetter.cs" />
-     <Compile Include="Assets\TreeMaster\Scripts\TM_CollapseMesh.cs" />
+     <Compile Include="Assets\TreeMaster\Scripts\TM_Screenshots.cs" />
      <Compile Include="Assets\TreeMaster\Scripts\TM_SwapMaterial.cs" />
+     <Compile Include="Assets\TreeMaster\Scripts\ExporterMenu.cs" />
+     <Compile Include="Assets\TreeMaster\Scripts\TM_MenuItem.cs" />
+     <Compile Include="Assets\TreeMaster\Scripts\TM_ChangeMesh.cs" />
+     <Compile Include="Assets\TreeMaster\Scripts\FBXUnityMeshGetter.cs" />
+     <Compile Include="Assets\TreeMaster\Scripts\FBXUnityMaterialGetter.cs" />
+     <Compile Include="Assets\TreeMaster\Scripts\TM_Prefabber.cs" />
+     <Compile Include="Assets\TreeMaster\Scripts\TM_CollapseMesh.cs" />
     <Reference Include="UnityEngine">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.10f1/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>

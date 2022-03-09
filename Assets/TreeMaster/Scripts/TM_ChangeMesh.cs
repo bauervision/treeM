@@ -43,13 +43,14 @@ public class TM_ChangeMesh : EditorWindow
 
     string[] resourceString = new string[] { "_FoliageBranches", "_BaseFoliage", "_Trunks", "_HighPlants", "_Grasses", "_Flowers", "_Rocks", "_Scatter", "_Spruce" };
 
+    private int variety, seasonal, age, trunk, roots, ivy, vines, bark, lichen;
 
     public static void ShowWindow()
     {
         EditorWindow editorWindow = EditorWindow.GetWindow(typeof(TM_ChangeMesh));
         editorWindow.autoRepaintOnSceneChange = true;
         editorWindow.Show();
-        editorWindow.titleContent = new GUIContent("Switch Mesh");
+        editorWindow.titleContent = new GUIContent("Change Mesh");
 
     }
 
@@ -66,174 +67,194 @@ public class TM_ChangeMesh : EditorWindow
             {
 
                 // verify that we are selected on A FV Mesh before running any of the following methods
-                if (!isForestVisionMesh())
-                {
-                    GUILayout.Label("Not a ForestVision Mesh", EditorStyles.boldLabel);
-                }
-                else
-                {
-                    // hi plants, grasses and flowers dont have species ...yet
-                    if (!GetFoliageType("HP") && !GetFoliageType("Grasses") && !GetFoliageType("Flowers"))
-                    {
-                        int initialVersion = int.Parse(selMf.sharedMesh.name.Last().ToString());
-                        GUILayout.Label("Switch Species on Selected", EditorStyles.boldLabel);
-                        includeChildren = EditorGUILayout.Toggle("Include Children?", includeChildren);
-                        speciesVersion = initialVersion;
-                        speciesVersion = EditorGUILayout.IntSlider("Species Number", speciesVersion, 1, GetSpeciesCount(Selection.activeGameObject));
+                // if (!isTreeMasterMesh())
+                // {
+                //     GUILayout.Label("Not a TreeMaster Mesh", EditorStyles.boldLabel);
+                // }
+                // else
+                // {
+                // hi plants, grasses and flowers dont have species ...yet
+                // if (!GetFoliageType("HP") && !GetFoliageType("Grasses") && !GetFoliageType("Flowers"))
+                // {
+                //int initialVersion = int.Parse(selMf.sharedMesh.name.Last().ToString());
+                // GUILayout.Label("Switch Species on Selected", EditorStyles.boldLabel);
+                // includeChildren = EditorGUILayout.Toggle("Include Children?", includeChildren);
+                //speciesVersion = initialVersion;
+                GUILayout.Label("Foliage:", EditorStyles.boldLabel);
+                variety = EditorGUILayout.IntSlider("Variety", variety, 1, 16);
+                seasonal = EditorGUILayout.IntSlider("Season", seasonal, 1, 8);
+                age = EditorGUILayout.IntSlider("Age", age, 1, 8);
+                EditorGUILayout.Space();
 
-                        SwitchSpeciesVersion(speciesVersion);
+                GUILayout.Label("Trunk:", EditorStyles.boldLabel);
+                bark = EditorGUILayout.IntSlider("Bark", bark, 1, 8);
+                trunk = EditorGUILayout.IntSlider("Trunk", trunk, 1, 8);
+                lichen = EditorGUILayout.IntSlider("Lichen", lichen, 1, 8);
+                roots = EditorGUILayout.IntSlider("Roots", roots, 1, 8);
 
-                    }
-                    EditorGUILayout.Space();
-
-                    GUILayout.Label("Heirarchy Selctions", EditorStyles.boldLabel);
-                    // Handle Parent selection options
-                    bool hasParent = Selection.activeGameObject.transform.parent != null;
-                    if (hasParent)
-                    {
-                        EditorGUILayout.Space();
-                        if (GUILayout.Button("Select Parent?", GUILayout.ExpandHeight(false), GUILayout.ExpandWidth(true)))
-                            Selection.activeGameObject = Selection.activeGameObject.transform.parent.gameObject;
-
-                        EditorGUILayout.Space();
-                    }
-
-                    // Handle Child Selection options
-                    bool hasChildren = Selection.activeGameObject.transform.childCount > 0;
-                    if (hasChildren)
-                    {
-                        EditorGUILayout.Space();
-                        if (GUILayout.Button("Select Children?", GUILayout.ExpandHeight(false), GUILayout.ExpandWidth(true)))
-                        {
-
-                            List<GameObject> children = new List<GameObject>();
-                            foreach (Transform child in Selection.activeGameObject.transform)
-                                children.Add(child.gameObject);
-
-                            GameObject[] gOs = children.ToArray();
-                            Selection.objects = gOs;
-                        }
-                        EditorGUILayout.Space();
-                    }
-                    else
-                    {
-                        GUILayout.Label("No children exist for this object", EditorStyles.label);
-                        EditorGUILayout.Space();
-                    }
-
-                    GUILayout.Label("Options", EditorStyles.boldLabel);
-                    bool isValidFVMesh = true;
-                    // if we are selected on foliage...
-                    if (GetFoliageType("foliage"))
-                    {
-                        EditorGUILayout.Space();
-                        if (Selection.activeGameObject.transform.GetChild(0).GetComponent<MeshRenderer>().enabled == true)
-                        {
-                            removeFoliageBranch = EditorGUILayout.Toggle("Remove Foliage?", removeFoliageBranch);
-                            boostFoliageBranch = EditorGUILayout.Toggle("Increase Foliage?", boostFoliageBranch);
-                        }
-                        else
-                            addFoliageBranch = EditorGUILayout.Toggle("Add Foliage?", addFoliageBranch);
-
-                        EditorGUILayout.Space();
-                    }
-                    else if (GetFoliageType("_leaves") || GetFoliageType("_Leaves"))
-                    {
-                        EditorGUILayout.Space();
-
-                        GUILayout.Label("No Options for leaves...yet", EditorStyles.label);
-                        EditorGUILayout.Space();
-                    }
-                    else if (GetFoliageType("_trunk"))
-                    {
-                        bool TrunkHasChildren = Selection.activeGameObject.transform.childCount > 0;
-                        if (hasChildren)
-                        {
-                            EditorGUILayout.Space();
-                            GUILayout.Label("Warning: you have children attached to this trunk. Adjusting this mesh will result in the child branches no longer appearing to be attached.", EditorStyles.wordWrappedLabel);
-                            EditorGUILayout.Space();
-                        }
-                    }
-                    else if (GetFoliageType("HP"))
-                    {
-                        EditorGUILayout.Space();
-                        GUILayout.Label("High resolution Plant detected", EditorStyles.wordWrappedLabel);
-                        EditorGUILayout.Space();
-                    }
-                    else if (GetFoliageType("Grasses"))
-                    {
-                        EditorGUILayout.Space();
-                        GUILayout.Label("Grass Mesh detected, no species available", EditorStyles.wordWrappedLabel);
-                        EditorGUILayout.Space();
-                    }
-                    else if (GetFoliageType("Flowers"))
-                    {
-                        EditorGUILayout.Space();
-                        GUILayout.Label("Flowers detected, no species available", EditorStyles.wordWrappedLabel);
-                        EditorGUILayout.Space();
-                    }
-                    else if (GetFoliageType("Rocks"))
-                    {
-                        EditorGUILayout.Space();
-                        GUILayout.Label("Rocks detected, additonal species available", EditorStyles.wordWrappedLabel);
-                        EditorGUILayout.Space();
-                    }
-                    else if (GetFoliageType("_Card"))
-                    {
-                        EditorGUILayout.Space();
-                        GUILayout.Label("Card detected, additonal species available", EditorStyles.wordWrappedLabel);
-                        EditorGUILayout.Space();
-                    }
-                    else if (GetFoliageType("Scatter"))
-                    {
-                        EditorGUILayout.Space();
-                        GUILayout.Label("Scatter detected, additonal species available", EditorStyles.wordWrappedLabel);
-                        EditorGUILayout.Space();
-                    }
-                    else if (GetFoliageType("Spruce"))
-                    {
-                        EditorGUILayout.Space();
-                        GUILayout.Label("Spruce detected, additonal species available", EditorStyles.wordWrappedLabel);
-                        EditorGUILayout.Space();
-                    }
-                    else
-                    {
-                        GUILayout.Label("No Options for this FV Mesh...yet", EditorStyles.label);
-                        isValidFVMesh = false;
-                    }
+                EditorGUILayout.Space();
+                GUILayout.Label("Extras:", EditorStyles.boldLabel);
+                ivy = EditorGUILayout.IntSlider("Ivy", ivy, 1, 8);
+                vines = EditorGUILayout.IntSlider("Vines", vines, 1, 8);
 
 
-                    if (isValidFVMesh)
-                    {
-                        GUILayout.Label("Switch Mesh Option on Selected Only", EditorStyles.boldLabel);
+                SwitchVariety(variety);
 
-                        string initialName = Selection.activeGameObject.transform.GetComponent<MeshFilter>().sharedMesh.name;
-                        string tempName = initialName.Remove(initialName.Length - 3);
-                        int initialMeshVersion = 0;
-                        // hi res plants and grasses don't have species yet, so just handle mesh version
-                        if (GetFoliageType("HP") || GetFoliageType("Grasses") || GetFoliageType("Flowers"))
-                        {
-                            string zeroedMeshVersion = meshVersion < 10 ? "0" + meshVersion.ToString() : meshVersion.ToString();
-                            initialMeshVersion = int.Parse(zeroedMeshVersion);
-                        }
-                        else // this mesh does have species versions
-                        {
-                            // // if this mesh has 10 or more options
-                            if (GetFoliageType("Rocks") || GetFoliageType("_trunk"))
-                                initialMeshVersion = int.Parse(tempName.Substring(tempName.Length - 2));
-                            else // has fewer than 10 options, don't need to worry with the zero
-                                initialMeshVersion = int.Parse(tempName.Last().ToString());
+                // }
+                EditorGUILayout.Space();
 
-                        }
+                // GUILayout.Label("Heirarchy Selctions", EditorStyles.boldLabel);
+                // // Handle Parent selection options
+                // bool hasParent = Selection.activeGameObject.transform.parent != null;
+                // if (hasParent)
+                // {
+                //     EditorGUILayout.Space();
+                //     if (GUILayout.Button("Select Parent?", GUILayout.ExpandHeight(false), GUILayout.ExpandWidth(true)))
+                //         Selection.activeGameObject = Selection.activeGameObject.transform.parent.gameObject;
 
-                        meshVersion = initialMeshVersion;
-                        //Debug.Log("Mesh count: " + GetFBXResourceMeshCount(Selection.activeGameObject));
-                        meshVersion = (EditorGUILayout.IntSlider("Mesh Number", meshVersion, 1, GetFBXResourceMeshCount(Selection.activeGameObject)));
-                        SwitchMeshVersion(meshVersion);
-                    }
+                //     EditorGUILayout.Space();
+                // }
+
+                // // Handle Child Selection options
+                // bool hasChildren = Selection.activeGameObject.transform.childCount > 0;
+                // if (hasChildren)
+                // {
+                //     EditorGUILayout.Space();
+                //     if (GUILayout.Button("Select Children?", GUILayout.ExpandHeight(false), GUILayout.ExpandWidth(true)))
+                //     {
+
+                //         List<GameObject> children = new List<GameObject>();
+                //         foreach (Transform child in Selection.activeGameObject.transform)
+                //             children.Add(child.gameObject);
+
+                //         GameObject[] gOs = children.ToArray();
+                //         Selection.objects = gOs;
+                //     }
+                //     EditorGUILayout.Space();
+                // }
+                // else
+                // {
+                //     GUILayout.Label("No children exist for this object", EditorStyles.label);
+                //     EditorGUILayout.Space();
+                // }
+
+                GUILayout.Label("Export", EditorStyles.boldLabel);
+
+                if (GUILayout.Button("Save this tree preset", GUILayout.ExpandWidth(false)))
+                    Debug.Log("Exporting new tree...");
+
+                //bool isValidFVMesh = true;
+                // if we are selected on foliage...
+                // if (GetFoliageType("foliage"))
+                // {
+                //     EditorGUILayout.Space();
+                //     if (Selection.activeGameObject.transform.GetChild(0).GetComponent<MeshRenderer>().enabled == true)
+                //     {
+                //         removeFoliageBranch = EditorGUILayout.Toggle("Remove Foliage?", removeFoliageBranch);
+                //         boostFoliageBranch = EditorGUILayout.Toggle("Increase Foliage?", boostFoliageBranch);
+                //     }
+                //     else
+                //         addFoliageBranch = EditorGUILayout.Toggle("Add Foliage?", addFoliageBranch);
+
+                //     EditorGUILayout.Space();
+                // }
+                // else if (GetFoliageType("_leaves") || GetFoliageType("_Leaves"))
+                // {
+                //     EditorGUILayout.Space();
+
+                //     GUILayout.Label("No Options for leaves...yet", EditorStyles.label);
+                //     EditorGUILayout.Space();
+                // }
+                // else if (GetFoliageType("_trunk"))
+                // {
+                //     bool TrunkHasChildren = Selection.activeGameObject.transform.childCount > 0;
+                //     if (hasChildren)
+                //     {
+                //         EditorGUILayout.Space();
+                //         GUILayout.Label("Warning: you have children attached to this trunk. Adjusting this mesh will result in the child branches no longer appearing to be attached.", EditorStyles.wordWrappedLabel);
+                //         EditorGUILayout.Space();
+                //     }
+                // }
+                // else if (GetFoliageType("HP"))
+                // {
+                //     EditorGUILayout.Space();
+                //     GUILayout.Label("High resolution Plant detected", EditorStyles.wordWrappedLabel);
+                //     EditorGUILayout.Space();
+                // }
+                // else if (GetFoliageType("Grasses"))
+                // {
+                //     EditorGUILayout.Space();
+                //     GUILayout.Label("Grass Mesh detected, no species available", EditorStyles.wordWrappedLabel);
+                //     EditorGUILayout.Space();
+                // }
+                // else if (GetFoliageType("Flowers"))
+                // {
+                //     EditorGUILayout.Space();
+                //     GUILayout.Label("Flowers detected, no species available", EditorStyles.wordWrappedLabel);
+                //     EditorGUILayout.Space();
+                // }
+                // else if (GetFoliageType("Rocks"))
+                // {
+                //     EditorGUILayout.Space();
+                //     GUILayout.Label("Rocks detected, additonal species available", EditorStyles.wordWrappedLabel);
+                //     EditorGUILayout.Space();
+                // }
+                // else if (GetFoliageType("_Card"))
+                // {
+                //     EditorGUILayout.Space();
+                //     GUILayout.Label("Card detected, additonal species available", EditorStyles.wordWrappedLabel);
+                //     EditorGUILayout.Space();
+                // }
+                // else if (GetFoliageType("Scatter"))
+                // {
+                //     EditorGUILayout.Space();
+                //     GUILayout.Label("Scatter detected, additonal species available", EditorStyles.wordWrappedLabel);
+                //     EditorGUILayout.Space();
+                // }
+                // else if (GetFoliageType("Spruce"))
+                // {
+                //     EditorGUILayout.Space();
+                //     GUILayout.Label("Spruce detected, additonal species available", EditorStyles.wordWrappedLabel);
+                //     EditorGUILayout.Space();
+                // }
+                // else
+                // {
+                //     GUILayout.Label("No Options for this FV Mesh...yet", EditorStyles.label);
+                //     isValidFVMesh = false;
+                // }
 
 
-                }
+                // if (isValidFVMesh)
+                // {
+                // GUILayout.Label("Switch Mesh Option on Selected Only", EditorStyles.boldLabel);
+
+                // string initialName = Selection.activeGameObject.transform.GetComponent<MeshFilter>().sharedMesh.name;
+                // string tempName = initialName.Remove(initialName.Length - 3);
+                // int initialMeshVersion = 0;
+                // hi res plants and grasses don't have species yet, so just handle mesh version
+                // if (GetFoliageType("HP") || GetFoliageType("Grasses") || GetFoliageType("Flowers"))
+                // {
+                //     string zeroedMeshVersion = meshVersion < 10 ? "0" + meshVersion.ToString() : meshVersion.ToString();
+                //     initialMeshVersion = int.Parse(zeroedMeshVersion);
+                // }
+                // else // this mesh does have species versions
+                // {
+                //     // // if this mesh has 10 or more options
+                //     if (GetFoliageType("Rocks") || GetFoliageType("_trunk"))
+                //         initialMeshVersion = int.Parse(tempName.Substring(tempName.Length - 2));
+                //     else // has fewer than 10 options, don't need to worry with the zero
+                //initialMeshVersion = int.Parse(tempName.Last().ToString());
+
+                // }
+
+                // meshVersion = initialMeshVersion;
+                // //Debug.Log("Mesh count: " + GetFBXResourceMeshCount(Selection.activeGameObject));
+                // meshVersion = (EditorGUILayout.IntSlider("Mesh Number", meshVersion, 1, GetFBXResourceMeshCount(Selection.activeGameObject)));
+                // SwitchMeshVersion(meshVersion);
+                // }
+
+
+                // }
             }
             else
             {
@@ -248,7 +269,7 @@ public class TM_ChangeMesh : EditorWindow
         GUILayout.EndVertical();
     }
 
-    private bool isForestVisionMesh()
+    private bool isTreeMasterMesh()
     {
         return (GetFoliageType("Spruce") || GetFoliageType("Scatter") || GetFoliageType("_Leaves") || GetFoliageType("_Card") || GetFoliageType("foliage") || GetFoliageType("_leaves") || GetFoliageType("_trunk") || GetFoliageType("HP") || GetFoliageType("Grasses") || GetFoliageType("Flowers") || GetFoliageType("Rocks"));
     }
@@ -269,8 +290,8 @@ public class TM_ChangeMesh : EditorWindow
 
     private void SwitchSpecies(GameObject thisGameObject, int newSpecies)
     {
-        Mesh[] fbxMeshes = GetFBXSource(thisGameObject);
-        int resourceIndex = GetFBXResourceID(thisGameObject);
+        // Mesh[] fbxMeshes = GetFBXSource(thisGameObject);
+        // int resourceIndex = GetFBXResourceID(thisGameObject);
         // handle the current selection
         MeshFilter mf = thisGameObject.transform.GetComponent<MeshFilter>();
         string oldMeshName;
@@ -284,56 +305,56 @@ public class TM_ChangeMesh : EditorWindow
 
             // remove the last character from the name, ie, the version number...add on the version number we want to switch to
             newMeshName = mf.sharedMesh.name.Remove(mf.sharedMesh.name.Length - 1) + newSpecies.ToString();
+            Debug.Log(newMeshName);
 
+            // if (oldMeshName != newMeshName)
+            // {
+            //     // as long as the swap mesh is different , swap it
+            //     if (fbxMeshes != null)
+            //     {
+            //         foreach (Mesh mesh in fbxMeshes)
+            //             // run through and find the source mesh we want to switch with
+            //             if (mesh.name == newMeshName)// if we find the name of what we want to swap with in the fbx file
+            //                 mf.sharedMesh = mesh;// swap meshes
+            //     }
+            //     else
+            //     {
 
-            if (oldMeshName != newMeshName)
-            {
-                // as long as the swap mesh is different , swap it
-                if (fbxMeshes != null)
-                {
-                    foreach (Mesh mesh in fbxMeshes)
-                        // run through and find the source mesh we want to switch with
-                        if (mesh.name == newMeshName)// if we find the name of what we want to swap with in the fbx file
-                            mf.sharedMesh = mesh;// swap meshes
-                }
-                else
-                {
-
-                }
-            }
-
-
-
-        }
-
-        if (resourceIndex == 0 && thisGameObject.transform.childCount > 0)
-        {
-            MeshFilter leavesMF = thisGameObject.transform.GetChild(0).transform.GetComponent<MeshFilter>();
-
-            // if this gameobject has a mesh filter assigned, handle the swap
-            if (leavesMF != null)
-            {
-                // store the name of this current mesh
-                string oldLeavesMeshName = leavesMF.sharedMesh.name;
-                string newLeavesMeshName = leavesMF.sharedMesh.name.Remove(leavesMF.sharedMesh.name.Length - 1) + newSpecies.ToString();
-
-                if (oldLeavesMeshName != newLeavesMeshName) // as long as the swap mesh is different, swap it
-                    foreach (Mesh mesh in fbxMeshes)// run through and find the source mesh we want to switch with
-                        if (mesh.name == newLeavesMeshName)// if we find the name of what we want to swap with in the fbx file
-                            leavesMF.sharedMesh = mesh;// swap meshes
-            }
+            //     }
+            // }
 
 
 
         }
+
+        // if (resourceIndex == 0 && thisGameObject.transform.childCount > 0)
+        // {
+        //     MeshFilter leavesMF = thisGameObject.transform.GetChild(0).transform.GetComponent<MeshFilter>();
+
+        //     // if this gameobject has a mesh filter assigned, handle the swap
+        //     if (leavesMF != null)
+        //     {
+        //         // store the name of this current mesh
+        //         string oldLeavesMeshName = leavesMF.sharedMesh.name;
+        //         string newLeavesMeshName = leavesMF.sharedMesh.name.Remove(leavesMF.sharedMesh.name.Length - 1) + newSpecies.ToString();
+
+        //         // if (oldLeavesMeshName != newLeavesMeshName) // as long as the swap mesh is different, swap it
+        //         //     foreach (Mesh mesh in fbxMeshes)// run through and find the source mesh we want to switch with
+        //         //         if (mesh.name == newLeavesMeshName)// if we find the name of what we want to swap with in the fbx file
+        //         //             leavesMF.sharedMesh = mesh;// swap meshes
+        //     }
+
+
+
+        // }
     }
 
 
 
     private void SwitchMesh(GameObject thisGameObject, int newVersion)
     {
-        Mesh[] fbxMeshes = GetFBXSource(thisGameObject);
-        int resourceIndex = GetFBXResourceID(thisGameObject);
+        // Mesh[] fbxMeshes = GetFBXSource(thisGameObject);
+        // int resourceIndex = GetFBXResourceID(thisGameObject);
 
         // handle the current selection
         MeshFilter mf = thisGameObject.transform.GetComponent<MeshFilter>();
@@ -345,84 +366,84 @@ public class TM_ChangeMesh : EditorWindow
         {
             // store the name of this current mesh
             oldMeshName = mf.sharedMesh.name;
-            newMeshName = ProcessNewName(resourceIndex, mf);
-            if (oldMeshName != newMeshName) // as long as the swap mesh is different, swap it
-                if (fbxMeshes != null)
-                    foreach (Mesh mesh in fbxMeshes)// run through and find the source mesh we want to switch with
-                        if (mesh.name == newMeshName)// if we find the name of what we want to swap with in the fbx file
-                            mf.sharedMesh = mesh;// swap meshes
+            // newMeshName = ProcessNewName(resourceIndex, mf);
+            // if (oldMeshName != newMeshName) // as long as the swap mesh is different, swap it
+            //     if (fbxMeshes != null)
+            //         foreach (Mesh mesh in fbxMeshes)// run through and find the source mesh we want to switch with
+            //             if (mesh.name == newMeshName)// if we find the name of what we want to swap with in the fbx file
+            //                 mf.sharedMesh = mesh;// swap meshes
         }
         else
         {
             //this object doesnt have a mesh filter so lets see if it has any children
-            if (thisGameObject.transform.childCount > 0)
-            {
-                // collect all of its children
-                Transform[] allKids = thisGameObject.transform.GetComponentsInChildren<Transform>();
-                foreach (Transform kid in allKids)
-                    SwitchMesh(kid.gameObject, newVersion);
-            }
+            // if (thisGameObject.transform.childCount > 0)
+            // {
+            //     // collect all of its children
+            //     Transform[] allKids = thisGameObject.transform.GetComponentsInChildren<Transform>();
+            //     foreach (Transform kid in allKids)
+            //         SwitchMesh(kid.gameObject, newVersion);
+            // }
         }
 
         // now check to see if this is a foliage mesh, which means we also will need to update the leaves mesh child IF there is one
-        if (resourceIndex == 0 && thisGameObject.transform.childCount > 0)
-        {
-            MeshFilter leavesMF = thisGameObject.transform.GetChild(0).transform.GetComponent<MeshFilter>();
-            string oldLeavesMeshName;
-            string newLeavesMeshName;
-            // if this gameobject has a mesh filter assigned, handle the swap
-            if (leavesMF != null)
-            {
-                // store the name of this current mesh
-                oldLeavesMeshName = leavesMF.sharedMesh.name;
-                char currentSpeciesVersion = oldLeavesMeshName[oldLeavesMeshName.Length - 1];
-                newLeavesMeshName = leavesMF.sharedMesh.name.Remove(leavesMF.sharedMesh.name.Length - 4) + newVersion.ToString() + "_v" + currentSpeciesVersion;
+        // if (resourceIndex == 0 && thisGameObject.transform.childCount > 0)
+        // {
+        //     MeshFilter leavesMF = thisGameObject.transform.GetChild(0).transform.GetComponent<MeshFilter>();
+        //     string oldLeavesMeshName;
+        //     string newLeavesMeshName;
+        //     // if this gameobject has a mesh filter assigned, handle the swap
+        //     if (leavesMF != null)
+        //     {
+        //         // store the name of this current mesh
+        //         oldLeavesMeshName = leavesMF.sharedMesh.name;
+        //         char currentSpeciesVersion = oldLeavesMeshName[oldLeavesMeshName.Length - 1];
+        //         newLeavesMeshName = leavesMF.sharedMesh.name.Remove(leavesMF.sharedMesh.name.Length - 4) + newVersion.ToString() + "_v" + currentSpeciesVersion;
 
-                // handle whether we add the boost foliage or remove it
-                if (addFoliageBranch)
-                {
-                    thisGameObject.transform.GetChild(0).transform.GetComponent<MeshRenderer>().enabled = true;
-                    removeFoliageBranch = false;
-                    addFoliageBranch = false;
-                }
+        //         // handle whether we add the boost foliage or remove it
+        //         if (addFoliageBranch)
+        //         {
+        //             thisGameObject.transform.GetChild(0).transform.GetComponent<MeshRenderer>().enabled = true;
+        //             removeFoliageBranch = false;
+        //             addFoliageBranch = false;
+        //         }
 
-                if (removeFoliageBranch)
-                {
-                    thisGameObject.transform.GetChild(0).transform.GetComponent<MeshRenderer>().enabled = false;
-                    removeFoliageBranch = false;
-                    addFoliageBranch = false;
-                }
-
-
-                if (boostFoliageBranch)
-                {
-                    // if we have already boosted it, just change the mesh
-                    if (newLeavesMeshName.Contains("c2_") || newLeavesMeshName.Contains("y2_") || newLeavesMeshName.Contains("n2_") || newLeavesMeshName.Contains("e2_"))
-                        newLeavesMeshName = newLeavesMeshName.Remove(newLeavesMeshName.Length - 6) + "2_" + newVersion.ToString() + "_v" + currentSpeciesVersion;
-                    else // boost it and change the mesh
-                        newLeavesMeshName = newLeavesMeshName.Remove(newLeavesMeshName.Length - 5) + "2_" + newVersion.ToString() + "_v" + currentSpeciesVersion;
+        //         if (removeFoliageBranch)
+        //         {
+        //             thisGameObject.transform.GetChild(0).transform.GetComponent<MeshRenderer>().enabled = false;
+        //             removeFoliageBranch = false;
+        //             addFoliageBranch = false;
+        //         }
 
 
-
-                }
-                else
-                {
-                    // we dont want to boost foliage so we need to set it back to its original state
-                    // but first check to see if it HAS been boosted
-                    if (newLeavesMeshName.Contains("c2_") || newLeavesMeshName.Contains("y2_") || newLeavesMeshName.Contains("n2_") || newLeavesMeshName.Contains("e2_"))
-                        newLeavesMeshName = newLeavesMeshName.Remove(newLeavesMeshName.Length - 6) + "_" + newVersion.ToString() + "_v" + currentSpeciesVersion;
-                }
-
-
-                if (oldLeavesMeshName != newLeavesMeshName) // as long as the swap mesh is different, swap it
-                    foreach (Mesh mesh in fbxMeshes)// run through and find the source mesh we want to switch with
-                        if (mesh.name == newLeavesMeshName)// if we find the name of what we want to swap with in the fbx file
-                            leavesMF.sharedMesh = mesh;// swap meshes
-            }
+        //         if (boostFoliageBranch)
+        //         {
+        //             // if we have already boosted it, just change the mesh
+        //             if (newLeavesMeshName.Contains("c2_") || newLeavesMeshName.Contains("y2_") || newLeavesMeshName.Contains("n2_") || newLeavesMeshName.Contains("e2_"))
+        //                 newLeavesMeshName = newLeavesMeshName.Remove(newLeavesMeshName.Length - 6) + "2_" + newVersion.ToString() + "_v" + currentSpeciesVersion;
+        //             else // boost it and change the mesh
+        //                 newLeavesMeshName = newLeavesMeshName.Remove(newLeavesMeshName.Length - 5) + "2_" + newVersion.ToString() + "_v" + currentSpeciesVersion;
 
 
 
-        }
+        //         }
+        //         else
+        //         {
+        //             // we dont want to boost foliage so we need to set it back to its original state
+        //             // but first check to see if it HAS been boosted
+        //             if (newLeavesMeshName.Contains("c2_") || newLeavesMeshName.Contains("y2_") || newLeavesMeshName.Contains("n2_") || newLeavesMeshName.Contains("e2_"))
+        //                 newLeavesMeshName = newLeavesMeshName.Remove(newLeavesMeshName.Length - 6) + "_" + newVersion.ToString() + "_v" + currentSpeciesVersion;
+        //         }
+
+
+        //         if (oldLeavesMeshName != newLeavesMeshName) // as long as the swap mesh is different, swap it
+        //             foreach (Mesh mesh in fbxMeshes)// run through and find the source mesh we want to switch with
+        //                 if (mesh.name == newLeavesMeshName)// if we find the name of what we want to swap with in the fbx file
+        //                     leavesMF.sharedMesh = mesh;// swap meshes
+        //     }
+
+
+
+        //}
     }
 
 
@@ -589,16 +610,16 @@ public class TM_ChangeMesh : EditorWindow
 
     }
 
-    public void SwitchSpeciesVersion(int speciesVersion)
+    public void SwitchVariety(int variety)
     {
         // run through all of the children of the current selection
         foreach (GameObject g in Selection.gameObjects)
         {
-            SwitchSpecies(g, speciesVersion);
+            SwitchSpecies(g, variety);
 
             // and now figure out if we need to switch out children of our selection
             if (g.transform.childCount > 0 && includeChildren)
-                LoopThroughChildren(g, speciesVersion);
+                LoopThroughChildren(g, variety);
         }
     }
 
