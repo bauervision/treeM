@@ -7,8 +7,8 @@ using System;
 using UnityEditor;
 
 
-[ExecuteInEditMode]
 
+[ExecuteInEditMode]
 public class TM_ChangeMesh : EditorWindow
 {
 
@@ -44,13 +44,51 @@ public class TM_ChangeMesh : EditorWindow
 
     string[] resourceString = new string[] { "_FoliageBranches", "_BaseFoliage", "_Trunks", "_HighPlants", "_Grasses", "_Flowers", "_Rocks", "_Scatter", "_Spruce" };
 
-    private int variety, seasonal, age, trunk, roots, ivy, vines, bark, lichen;
-    private int varietyOld, seasonalOld, ageOld, trunkOld, rootsOld, ivyOld, vinesOld, barkOld, lichenOld;
+    private int variety = 1, seasonal = 1, age = 1, trunk = 1, roots = 0, ivy = 0, ivyVariety = 1, vines = 0, vineVariety = 1, bark = 1, lichen = 0, leafMesh = 1;
+    private int varietyOld = 1, seasonalOld = 1, ageOld = 1, trunkOld = 1, rootsOld = 0, ivyOld = 0, ivyVarietyOld = 1, vinesOld = 0, vineVarietyOld = 1, barkOld = 1, lichenOld = 0, leafMeshOld = 1;
 
-    string foliageString = "lf_v01_s01_a01";
-    string trunkString = "k_b01_t01_l01_r01";
-    string extrasString = "ex_i01_v01";
+    static string foliageStarter = "T!L_m01_v01_s01_a01";
+    static string trunkStarter = "T!K_t01_b01_l00_r00";
+    static string extrasStarter = "T!X_i00_l01_v00_k01";
 
+    ///<summary>T!L_m01_v01_s01_a01 </summary>
+    string foliageString = foliageStarter;//foliage mesh, variety, season, age
+
+    ///<summary>T!K_t01_b01_l01_r01 </summary>
+    string trunkString = trunkStarter;//trunk, bark, lichen, roots
+
+    ///<summary>T!X_i01_l01_v01_k01 </summary>
+    string extrasString = extrasStarter;//ivy mesh, ivy look, vine mesh, vine look
+
+
+    string newFoliageMeshName = foliageStarter;
+    string newTrunkMeshName = trunkStarter;
+    string newExtraMeshName = extrasStarter;
+    private float leafScale = 1, oldLeafScale = 1;
+    private float trunkScale = 1, oldTrunkScale = 1;
+    private float extrasScale = 1, oldExtrasScale = 1;
+    private float finalScale = 1, oldFinalScale = 1;
+
+    int trunkMeshOptions = 3;
+    int trunkBarkOptions = 3;
+    int trunkLichenOptions = 3;
+    int trunkRootOptions = 3;
+    float trunkMaxScale = 10f;
+
+    int foliageMeshOptions = 3;
+    int foliageVarietyOptions = 16;
+    int foliageSeasonalOptions = 4;
+    int foliageAgeOptions = 4;
+    float foliageMaxScale = 5f;
+
+    int extraIvyOptions = 4;
+    int extraIvyVarietyOptions = 4;
+    int extraVineOptions = 4;
+    int extraVineyVarietyOptions = 4;
+    float extraMaxScale = 5f;
+
+
+    Vector2 scrollPos;
     public static void ShowWindow()
     {
         EditorWindow editorWindow = EditorWindow.GetWindow(typeof(TM_ChangeMesh));
@@ -63,6 +101,7 @@ public class TM_ChangeMesh : EditorWindow
 
     void OnGUI()
     {
+        scrollPos = GUILayout.BeginScrollView(scrollPos);
         GUILayout.BeginVertical("box", GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true));
 
         EditorGUILayout.Space();
@@ -78,46 +117,67 @@ public class TM_ChangeMesh : EditorWindow
                     EditorGUILayout.Space();
                 }
 
-                //int initialVersion = int.Parse(selMf.sharedMesh.name.Last().ToString());
-                // GUILayout.Label("Switch Species on Selected", EditorStyles.boldLabel);
-                // includeChildren = EditorGUILayout.Toggle("Include Children?", includeChildren);
-                //speciesVersion = initialVersion;
-                GUILayout.Label("Foliage:", EditorStyles.boldLabel);
-                variety = EditorGUILayout.IntSlider("Variety", variety, 1, 16);
-                SwitchVariety(variety);
-                seasonal = EditorGUILayout.IntSlider("Season", seasonal, 1, 8);
-                SwitchSeason(seasonal);
-                age = EditorGUILayout.IntSlider("Age", age, 1, 8);
-                SwitchAge(age);
                 EditorGUILayout.Space();
-
                 GUILayout.Label("Trunk:", EditorStyles.boldLabel);
-                bark = EditorGUILayout.IntSlider("Bark", bark, 1, 8);
-                SwitchBark(bark);
-                trunk = EditorGUILayout.IntSlider("Trunk", trunk, 1, 8);
-                SwitchTrunk(trunk);
-                lichen = EditorGUILayout.IntSlider("Lichen", lichen, 1, 8);
-                SwitchLichen(lichen);
-                roots = EditorGUILayout.IntSlider("Roots", roots, 1, 8);
-                SwitchRoots(roots);
-
+                GUILayout.Label(newTrunkMeshName + " " + oldTrunkScale + "%", EditorStyles.label);
                 EditorGUILayout.Space();
+                trunk = EditorGUILayout.IntSlider("Trunk", trunk, 1, trunkMeshOptions);//changes mesh version
+                SwitchTrunk(trunk);
+                bark = EditorGUILayout.IntSlider("Bark", bark, 1, trunkBarkOptions);//changes material
+                SwitchBark(bark);
+                lichen = EditorGUILayout.IntSlider("Lichen", lichen, 0, trunkLichenOptions);//material
+                SwitchLichen(lichen);
+                roots = EditorGUILayout.IntSlider("Roots", roots, 0, trunkRootOptions);//changes mesh & material to match above
+                SwitchRoots(roots);
+                trunkScale = EditorGUILayout.Slider("Trunk Scale", trunkScale, 0.2f, trunkMaxScale);//scaling
+                ScaleTrunk(trunkScale);
+                EditorGUILayout.Space();
+
+                GUILayout.Label("Foliage:", EditorStyles.boldLabel);
+                GUILayout.Label(newFoliageMeshName + " " + oldLeafScale + "%", EditorStyles.label);
+                EditorGUILayout.Space();
+                leafMesh = EditorGUILayout.IntSlider("Mesh Option", leafMesh, 1, foliageMeshOptions);//changes mesh option
+                SwitchLeafMesh(leafMesh);
+                variety = EditorGUILayout.IntSlider("Variety", variety, 1, foliageVarietyOptions);//changes mesh UV
+                SwitchVariety(variety);
+                seasonal = EditorGUILayout.IntSlider("Season", seasonal, 1, foliageSeasonalOptions);//changes material
+                SwitchSeason(seasonal);
+                age = EditorGUILayout.IntSlider("Age", age, 1, foliageAgeOptions);//changes material
+                SwitchAge(age);
+                leafScale = EditorGUILayout.Slider("Foliage Scale", leafScale, 0.2f, foliageMaxScale);//scaling
+                ScaleLeaves(leafScale);
+                EditorGUILayout.Space();
+
                 GUILayout.Label("Extras:", EditorStyles.boldLabel);
-                ivy = EditorGUILayout.IntSlider("Ivy", ivy, 1, 8);
+                GUILayout.Label(newExtraMeshName + " " + oldExtrasScale + "%", EditorStyles.label);
+                EditorGUILayout.Space();
+                ivy = EditorGUILayout.IntSlider("Ivy Mesh", ivy, 0, extraIvyOptions);//changes mesh option
                 SwitchIvy(ivy);
-                vines = EditorGUILayout.IntSlider("Vines", vines, 1, 8);
+                ivyVariety = EditorGUILayout.IntSlider("Ivy Look", ivyVariety, 1, extraIvyVarietyOptions);// changes UV
+                SwitchIvyVariety(ivyVariety);
+                vines = EditorGUILayout.IntSlider("Vine Mesh", vines, 0, extraVineOptions);//changes mesh option
                 SwitchVines(vines);
-
-
-                // }
+                vineVariety = EditorGUILayout.IntSlider("Vine Look", vineVariety, 1, extraVineyVarietyOptions);// changes UV
+                SwitchVineVariety(vineVariety);
+                extrasScale = EditorGUILayout.Slider("Extras Scale", extrasScale, 0.2f, extraMaxScale);//scaling
+                ScaleExtras(extrasScale);
                 EditorGUILayout.Space();
 
                 GUILayout.Label("Export", EditorStyles.boldLabel);
+                EditorGUILayout.Space();
+                finalScale = EditorGUILayout.Slider("Final Scaling: " + oldFinalScale + "%", finalScale, 0.2f, 25);
+                ScaleFinal(finalScale);
+                EditorGUILayout.Space();
+                GUILayout.Label("Exported tree will be located in /TreeMaster/Exports/", EditorStyles.wordWrappedLabel);
 
-                if (GUILayout.Button("Save this tree preset", GUILayout.ExpandWidth(false)))
-                    Debug.Log("Exporting new tree...");
+                if (GUILayout.Button("Save this tree preset", GUILayout.MaxHeight(50), GUILayout.MinHeight(50)))
+                    ExportNewPreset();
 
+                EditorGUILayout.Space();
+                if (GUILayout.Button("Reset", GUILayout.MaxHeight(30), GUILayout.MinHeight(30)))
+                    Reset();
 
+                GUILayout.Label("Exported tree will be located in /TreeMaster/Exports/", EditorStyles.wordWrappedLabel);
             }
             else
             {
@@ -130,102 +190,104 @@ public class TM_ChangeMesh : EditorWindow
         }
 
         GUILayout.EndVertical();
+        GUILayout.EndScrollView();
     }
 
-    private void SwitchVines(int newVines)
+    void Reset()
     {
-        string newName;
-        if (newVines != vinesOld)
+        foliageString = foliageStarter;
+        trunkString = trunkStarter;
+        extrasString = extrasStarter;
+
+        leafScale = 1; oldLeafScale = 1;
+        trunkScale = 1; oldTrunkScale = 1;
+        extrasScale = 1; oldExtrasScale = 1;
+        finalScale = 1; oldFinalScale = 1;
+
+        leafMesh = 1; variety = 1; seasonal = 1; age = 1; varietyOld = 1; seasonalOld = 1; ageOld = 1; leafMeshOld = 1;
+        trunk = 1; roots = 0; bark = 1; lichen = 0; trunkOld = 1; rootsOld = 0; barkOld = 1; lichenOld = 0;
+        ivy = 0; ivyVariety = 1; vines = 0; vineVariety = 1; ivyOld = 0; ivyVarietyOld = 1; vinesOld = 0; vineVarietyOld = 1;
+    }
+
+    void ExportNewPreset()
+    {
+        Debug.Log("Export Trunk Mesh: " + newTrunkMeshName + " scaled: " + oldTrunkScale + "%");
+        Debug.Log("Export Foliage Mesh: " + newFoliageMeshName + " scaled: " + oldLeafScale + "%");
+        Debug.Log("Export Extra Mesh: " + newExtraMeshName + " scaled: " + oldExtrasScale + "%");
+        Debug.Log("Final Scaling: " + oldFinalScale + "%");
+
+    }
+
+    #region Scaling
+    private void ScaleFinal(float finalScaleValue)
+    {
+        if (oldFinalScale != finalScaleValue)
         {
-            extrasString = newName = GetNewVersionName(extrasString, 'v', newVines);
-            Debug.Log("Vines: " + newName);
-            vinesOld = newVines;
+            Selection.activeGameObject.transform.localScale = new Vector3(finalScaleValue, finalScaleValue, finalScaleValue);
+            oldFinalScale = finalScaleValue;
         }
     }
 
-    private void SwitchIvy(int newIvy)
+    private void ScaleExtras(float extrasScaleValue)
     {
-        string newName;
-        if (newIvy != ivyOld)
+        if (oldExtrasScale != extrasScaleValue)
         {
-            extrasString = newName = GetNewVersionName(extrasString, 'i', newIvy);
-            //Debug.Log("Ivy: " + newName);
-            ivyOld = newIvy;
+
+            oldExtrasScale = extrasScaleValue;
         }
     }
 
-    private void SwitchRoots(int newRoots)
+    private void ScaleTrunk(float trunkScaleValue)
     {
-        string newName;
-        if (newRoots != rootsOld)
+        if (oldTrunkScale != trunkScaleValue)
         {
-            trunkString = newName = GetNewVersionName(trunkString, 'r', newRoots);
-            Debug.Log("Roots: " + newName);
-            rootsOld = newRoots;
+
+            oldTrunkScale = trunkScaleValue;
         }
     }
 
-    private void SwitchLichen(int newLichen)
+    private void ScaleLeaves(float leafScaleValue)
     {
-        string newName;
-        if (newLichen != lichenOld)
+        if (oldLeafScale != leafScaleValue)
         {
-            trunkString = newName = GetNewVersionName(trunkString, 'l', newLichen);
-            //Debug.Log("Lichen: " + newName);
-            lichenOld = newLichen;
+
+            oldLeafScale = leafScaleValue;
         }
     }
+    #endregion
 
-    private void SwitchTrunk(int newTrunk)
+    #region Foliage
+    private void SwitchLeafMesh(int newLeafMesh)
     {
-        string newName;
-        if (newTrunk != trunkOld)
+        if (newLeafMesh != leafMeshOld)
         {
-            trunkString = newName = GetNewVersionName(trunkString, 't', newTrunk);
-            //Debug.Log("Trunk: " + newName);
-            trunkOld = newTrunk;
-        }
-    }
-
-    private void SwitchBark(int newBark)
-    {
-        string newName;
-        if (newBark != barkOld)
-        {
-            trunkString = newName = GetNewVersionName(trunkString, 'b', newBark);
-            //Debug.Log("Bark: " + newName);
-            barkOld = newBark;
+            foliageString = newFoliageMeshName = GetNewVersionName(foliageString, 'm', newLeafMesh);
+            leafMeshOld = newLeafMesh;
         }
     }
 
     private void SwitchAge(int newAge)
     {
-        string newName;
         if (newAge != ageOld)
         {
-            foliageString = newName = GetNewVersionName(foliageString, 'a', newAge);
-            Debug.Log("Age: " + newName);
+            foliageString = newFoliageMeshName = GetNewVersionName(foliageString, 'a', newAge);
             ageOld = newAge;
         }
     }
 
     private void SwitchSeason(int newSeason)
     {
-        string newName;
         if (newSeason != seasonalOld)
         {
-            foliageString = newName = GetNewVersionName(foliageString, 's', newSeason);
-            //Debug.Log("Season: " + newName);
+            foliageString = newFoliageMeshName = GetNewVersionName(foliageString, 's', newSeason);
             seasonalOld = newSeason;
         }
     }
     public void SwitchVariety(int newVariety)
     {
-        string newName;
         if (newVariety != varietyOld)
         {
-            foliageString = newName = GetNewVersionName(foliageString, 'v', newVariety);
-            //Debug.Log("Variety: " + newName);
+            foliageString = newFoliageMeshName = GetNewVersionName(foliageString, 'v', newVariety);
             varietyOld = newVariety;
         }
 
@@ -239,17 +301,99 @@ public class TM_ChangeMesh : EditorWindow
         //         LoopThroughChildren(g, variety);
         // }
     }
+    #endregion
+
+    #region Trunks
+    private void SwitchRoots(int newRoots)
+    {
+        if (newRoots != rootsOld)
+        {
+            trunkString = newTrunkMeshName = GetNewVersionName(trunkString, 'r', newRoots);
+            rootsOld = newRoots;
+        }
+    }
+
+    private void SwitchLichen(int newLichen)
+    {
+        if (newLichen != lichenOld)
+        {
+            trunkString = newTrunkMeshName = GetNewVersionName(trunkString, 'l', newLichen);
+            lichenOld = newLichen;
+        }
+    }
+
+    private void SwitchTrunk(int newTrunk)
+    {
+        if (newTrunk != trunkOld)
+        {
+            trunkString = newTrunkMeshName = GetNewVersionName(trunkString, 't', newTrunk);
+            trunkOld = newTrunk;
+        }
+    }
+
+    private void SwitchBark(int newBark)
+    {
+        if (newBark != barkOld)
+        {
+            trunkString = newTrunkMeshName = GetNewVersionName(trunkString, 'b', newBark);
+            barkOld = newBark;
+        }
+    }
+    #endregion
+
+    #region Extras
+    private void SwitchIvyVariety(int newIvyVariety)
+    {
+
+        if (newIvyVariety != ivyVarietyOld)
+        {
+            extrasString = newExtraMeshName = GetNewVersionName(extrasString, 'l', newIvyVariety);
+            ivyVarietyOld = newIvyVariety;
+        }
+    }
+
+    private void SwitchVineVariety(int newVineVariety)
+    {
+        if (newVineVariety != vineVarietyOld)
+        {
+            extrasString = newExtraMeshName = GetNewVersionName(extrasString, 'k', newVineVariety);
+            vineVarietyOld = newVineVariety;
+        }
+    }
+
+
+
+    private void SwitchVines(int newVines)
+    {
+        if (newVines != vinesOld)
+        {
+            extrasString = newExtraMeshName = GetNewVersionName(extrasString, 'v', newVines);
+            vinesOld = newVines;
+        }
+    }
+
+    private void SwitchIvy(int newIvy)
+    {
+        if (newIvy != ivyOld)
+        {
+            extrasString = newExtraMeshName = GetNewVersionName(extrasString, 'i', newIvy);
+            ivyOld = newIvy;
+        }
+    }
+    #endregion
+
+
 
     string GetNewVersionName(string inputString, char splitChar, int newVersion)
     {
         string[] split = inputString.Split(splitChar);
-        string removed;
-        removed = split[1].Remove(0, 2);
+        string removed = split[1].Remove(0, 2);
+
         //add in the new variety
         string newVarietyString = newVersion + removed;
         //determine if we need to add a zero
         string finalName;
-        if (variety < 10)
+        if (newVersion < 10)
             finalName = split[0] + splitChar + "0" + newVarietyString;
         else
             finalName = split[0] + splitChar + newVarietyString;
@@ -260,7 +404,7 @@ public class TM_ChangeMesh : EditorWindow
 
     private bool isTreeMasterMesh()
     {
-        return (GetFoliageType("TM_leaf") || GetFoliageType("TM_trunk") || GetFoliageType("TM_extra"));
+        return (GetFoliageType("T!L") || GetFoliageType("T!K") || GetFoliageType("T!X"));
     }
 
 
@@ -370,98 +514,10 @@ public class TM_ChangeMesh : EditorWindow
             // }
         }
 
-        // now check to see if this is a foliage mesh, which means we also will need to update the leaves mesh child IF there is one
-        // if (resourceIndex == 0 && thisGameObject.transform.childCount > 0)
-        // {
-        //     MeshFilter leavesMF = thisGameObject.transform.GetChild(0).transform.GetComponent<MeshFilter>();
-        //     string oldLeavesMeshName;
-        //     string newLeavesMeshName;
-        //     // if this gameobject has a mesh filter assigned, handle the swap
-        //     if (leavesMF != null)
-        //     {
-        //         // store the name of this current mesh
-        //         oldLeavesMeshName = leavesMF.sharedMesh.name;
-        //         char currentSpeciesVersion = oldLeavesMeshName[oldLeavesMeshName.Length - 1];
-        //         newLeavesMeshName = leavesMF.sharedMesh.name.Remove(leavesMF.sharedMesh.name.Length - 4) + newVersion.ToString() + "_v" + currentSpeciesVersion;
 
-        //         // handle whether we add the boost foliage or remove it
-        //         if (addFoliageBranch)
-        //         {
-        //             thisGameObject.transform.GetChild(0).transform.GetComponent<MeshRenderer>().enabled = true;
-        //             removeFoliageBranch = false;
-        //             addFoliageBranch = false;
-        //         }
-
-        //         if (removeFoliageBranch)
-        //         {
-        //             thisGameObject.transform.GetChild(0).transform.GetComponent<MeshRenderer>().enabled = false;
-        //             removeFoliageBranch = false;
-        //             addFoliageBranch = false;
-        //         }
-
-
-        //         if (boostFoliageBranch)
-        //         {
-        //             // if we have already boosted it, just change the mesh
-        //             if (newLeavesMeshName.Contains("c2_") || newLeavesMeshName.Contains("y2_") || newLeavesMeshName.Contains("n2_") || newLeavesMeshName.Contains("e2_"))
-        //                 newLeavesMeshName = newLeavesMeshName.Remove(newLeavesMeshName.Length - 6) + "2_" + newVersion.ToString() + "_v" + currentSpeciesVersion;
-        //             else // boost it and change the mesh
-        //                 newLeavesMeshName = newLeavesMeshName.Remove(newLeavesMeshName.Length - 5) + "2_" + newVersion.ToString() + "_v" + currentSpeciesVersion;
-
-
-
-        //         }
-        //         else
-        //         {
-        //             // we dont want to boost foliage so we need to set it back to its original state
-        //             // but first check to see if it HAS been boosted
-        //             if (newLeavesMeshName.Contains("c2_") || newLeavesMeshName.Contains("y2_") || newLeavesMeshName.Contains("n2_") || newLeavesMeshName.Contains("e2_"))
-        //                 newLeavesMeshName = newLeavesMeshName.Remove(newLeavesMeshName.Length - 6) + "_" + newVersion.ToString() + "_v" + currentSpeciesVersion;
-        //         }
-
-
-        //         if (oldLeavesMeshName != newLeavesMeshName) // as long as the swap mesh is different, swap it
-        //             foreach (Mesh mesh in fbxMeshes)// run through and find the source mesh we want to switch with
-        //                 if (mesh.name == newLeavesMeshName)// if we find the name of what we want to swap with in the fbx file
-        //                     leavesMF.sharedMesh = mesh;// swap meshes
-        //     }
-
-
-
-        //}
     }
 
 
-    private string ProcessNewName(int resourceIndex, MeshFilter meshFilter)
-    {
-        // get the current mesh name
-        string MeshName = meshFilter.sharedMesh.name;
-        // grab the species version currently being used
-        char currentSpeciesVersion = MeshName[MeshName.Length - 1];
-
-        string newName;
-
-        // foliage cases
-        if (resourceIndex < 2 || resourceIndex == 8)
-        {
-            newName = meshFilter.sharedMesh.name.Remove(meshFilter.sharedMesh.name.Length - 4) + meshVersion.ToString() + "_v" + currentSpeciesVersion;
-        }
-        else if (resourceIndex == 2 || resourceIndex == 6 || resourceIndex == 7)// trunk or rocks
-        {
-            string zeroedMeshVersion = meshVersion < 10 ? "0" + meshVersion.ToString() : meshVersion.ToString();
-            newName = meshFilter.sharedMesh.name.Remove(meshFilter.sharedMesh.name.Length - 5) + zeroedMeshVersion + "_v" + currentSpeciesVersion;
-
-        }
-
-
-        else// everything else
-        {
-            string zeroedMeshVersion = meshVersion < 10 ? "0" + meshVersion.ToString() : meshVersion.ToString();
-            newName = meshFilter.sharedMesh.name.Remove(meshFilter.sharedMesh.name.Length - 2) + zeroedMeshVersion;
-
-        }
-        return newName;
-    }
 
     private Mesh[] GetFBXSource(GameObject selObject)
     {

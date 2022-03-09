@@ -23,17 +23,17 @@ namespace TreeMasterScreenshot
             editorWindow.autoRepaintOnSceneChange = true;
             editorWindow.Show();
             editorWindow.titleContent = new GUIContent("Screenshot");
-            editorWindow.maxSize = new Vector2(320f, 350f);
-            editorWindow.minSize = editorWindow.maxSize;
+
         }
 
         void OnGUI()
         {
+            GUILayout.BeginVertical("box", GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true));
             GUILayout.Label("Where do you want the rendered image?", EditorStyles.boldLabel);
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.TextField(path, GUILayout.ExpandWidth(false));
-            if (GUILayout.Button("Browse", GUILayout.ExpandWidth(false)))
+            EditorGUILayout.TextField(path);
+            if (GUILayout.Button("Browse"))
                 path = EditorUtility.SaveFolderPanel("Path to Save Images", path, Application.dataPath);
             EditorGUILayout.EndHorizontal();
 
@@ -148,7 +148,7 @@ namespace TreeMasterScreenshot
                 takeHiResShot = false;
             }
 
-
+            GUILayout.EndVertical();
 
         }
 
