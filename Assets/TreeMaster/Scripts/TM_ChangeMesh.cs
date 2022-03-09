@@ -256,8 +256,15 @@ public class TM_ChangeMesh : EditorWindow
     {
         if (oldLeafScale != leafScaleValue)
         {
-            for (int i = 0; i < Selection.activeGameObject.transform.GetChild(0).transform.GetChild(0).transform.childCount; i++)
-                Selection.activeGameObject.transform.GetChild(0).transform.GetChild(0).transform.GetChild(i).transform.localScale = new Vector3(leafScaleValue, leafScaleValue, leafScaleValue);
+            // first get all the branches
+            List<Transform> allBranches = new List<Transform>();//  Selection.activeGameObject.transform.GetChild(0).transform.GetChild(0).GetComponentsInChildren<Transform>().ToList();
+            for (int i = 0; i < Selection.activeGameObject.transform.GetChild(0).transform.GetChild(0).childCount; i++)
+                allBranches.Add(Selection.activeGameObject.transform.GetChild(0).transform.GetChild(0).transform.GetChild(i));
+
+            // then scale only the leaves
+            foreach (Transform branch in allBranches)
+                for (int i = 0; i < branch.childCount; i++)
+                    branch.transform.GetChild(i).transform.localScale = new Vector3(leafScaleValue, leafScaleValue, leafScaleValue);
 
             oldLeafScale = leafScaleValue;
         }
