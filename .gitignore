@@ -4,5 +4,8 @@ Library/
 Logs/
 ProjectSettings/
 Temp/
-
+Assets/SourceTrees/
+Assets/Exports/
+Assets/TreeMaster/Exports/
+Assets/TreeMaster/Resources/Materials/
 *.meta
