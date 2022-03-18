@@ -58,6 +58,15 @@ namespace TreeMaster
             PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
             Selection.activeGameObject = newObj;
         }
+
+        [MenuItem("GameObject/3D Object/TreeMaster/Pine Branch Group", false, 30)]
+        private static void CreatePineLeafPlaneBundle()
+        {
+            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("LeafCardBent", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
+            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+            Selection.activeGameObject = newObj;
+        }
+
         [MenuItem("GameObject/3D Object/TreeMaster/Leaf Bundle", false, 50)]
         private static void CreateLeafCard()
         {
