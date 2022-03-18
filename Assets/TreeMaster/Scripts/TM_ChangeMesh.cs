@@ -121,11 +121,11 @@ public class TM_ChangeMesh : EditorWindow
             {
 
                 EditorGUILayout.Space();
-                GUILayout.Label("Trunk:", EditorStyles.boldLabel);
-                GUILayout.Label(newTrunkMeshName + " " + oldTrunkScale + "%", EditorStyles.label);
-                EditorGUILayout.Space();
-                trunk = EditorGUILayout.IntSlider("Trunk", trunk, 1, trunkMeshOptions);//changes mesh version
+                GUILayout.Label("Tree:", EditorStyles.boldLabel);
+                trunk = EditorGUILayout.IntSlider("Type", trunk, 1, GetTotalCount("Assets/TreeMaster/Resources/Trees"));//changes tree version
                 SwitchTrunk(trunk);
+                EditorGUILayout.Space();
+                GUILayout.Label("Trunk:", EditorStyles.boldLabel);
                 bark = EditorGUILayout.IntSlider("Bark", bark, 1, GetTotalCount("Assets/TreeMaster/Resources/Materials/Barks"));//changes material
                 SwitchBark(bark);
                 lichen = EditorGUILayout.IntSlider("Lichen", lichen, 0, trunkLichenOptions);//material
@@ -312,19 +312,8 @@ public class TM_ChangeMesh : EditorWindow
             if (foliageObj.transform.childCount > 0)
                 LoopThroughChildrenMesh(foliageObj, varietyString);
 
-            //Debug.Log("LeafCard_" + varietyString);
             varietyOld = newVariety;
         }
-
-        // // run through all of the children of the current selection
-        // foreach (GameObject g in Selection.gameObjects)
-        // {
-        //     SwitchSpecies(g, variety);
-
-        //     // and now figure out if we need to switch out children of our selection
-        //     if (g.transform.childCount > 0 && includeChildren)
-        //         LoopThroughChildrenMaterials(g, variety);
-        // }
     }
 
     private void LoopThroughChildrenMesh(GameObject foliageObj, string newVariety)
@@ -443,7 +432,7 @@ public class TM_ChangeMesh : EditorWindow
         // loop and find all the meshes with the sourceName material assigned and swap them
         for (int i = 0; i < currentGameObj.transform.childCount; i++)
         {
-            MeshRenderer mrC = currentGameObj.GetComponent<MeshRenderer>();
+            MeshRenderer mrC = currentGameObj.transform.GetChild(i).GetComponent<MeshRenderer>();
             // if this gameobject has a mesh renderer assigned and 
             if (mrC != null)
                 if (mrC.sharedMaterial.name.StartsWith(sourceName))
@@ -515,282 +504,10 @@ public class TM_ChangeMesh : EditorWindow
     }
 
 
-
-
-
-    private void SwitchSpecies(GameObject thisGameObject, int newSpecies)
-    {
-        // Mesh[] fbxMeshes = GetFBXSource(thisGameObject);
-        // int resourceIndex = GetFBXResourceID(thisGameObject);
-        // handle the current selection
-        MeshFilter mf = thisGameObject.transform.GetComponent<MeshFilter>();
-        string oldMeshName;
-        string newMeshName;
-
-        // if this gameobject has a mesh filter assigned, handle the swap
-        if (mf != null)
-        {
-            // store the name of this current mesh
-            oldMeshName = mf.sharedMesh.name;
-
-            // remove the last character from the name, ie, the version number...add on the version number we want to switch to
-            newMeshName = mf.sharedMesh.name.Remove(mf.sharedMesh.name.Length - 1) + newSpecies.ToString();
-            Debug.Log(newMeshName);
-
-            // if (oldMeshName != newMeshName)
-            // {
-            //     // as long as the swap mesh is different , swap it
-            //     if (fbxMeshes != null)
-            //     {
-            //         foreach (Mesh mesh in fbxMeshes)
-            //             // run through and find the source mesh we want to switch with
-            //             if (mesh.name == newMeshName)// if we find the name of what we want to swap with in the fbx file
-            //                 mf.sharedMesh = mesh;// swap meshes
-            //     }
-            //     else
-            //     {
-
-            //     }
-            // }
-
-
-
-        }
-
-        // if (resourceIndex == 0 && thisGameObject.transform.childCount > 0)
-        // {
-        //     MeshFilter leavesMF = thisGameObject.transform.GetChild(0).transform.GetComponent<MeshFilter>();
-
-        //     // if this gameobject has a mesh filter assigned, handle the swap
-        //     if (leavesMF != null)
-        //     {
-        //         // store the name of this current mesh
-        //         string oldLeavesMeshName = leavesMF.sharedMesh.name;
-        //         string newLeavesMeshName = leavesMF.sharedMesh.name.Remove(leavesMF.sharedMesh.name.Length - 1) + newSpecies.ToString();
-
-        //         // if (oldLeavesMeshName != newLeavesMeshName) // as long as the swap mesh is different, swap it
-        //         //     foreach (Mesh mesh in fbxMeshes)// run through and find the source mesh we want to switch with
-        //         //         if (mesh.name == newLeavesMeshName)// if we find the name of what we want to swap with in the fbx file
-        //         //             leavesMF.sharedMesh = mesh;// swap meshes
-        //     }
-
-
-
-        // }
-    }
-
-
-    private void SwitchMesh(GameObject thisGameObject, string newVersion, string resource)
-    {
-        Mesh[] fbxMeshes = Resources.LoadAll<Mesh>(resource);
-
-        // handle the current selection
-        MeshFilter mf = thisGameObject.transform.GetComponent<MeshFilter>();
-
-        string oldMeshName;
-        string newMeshName = newVersion;
-        // if this gameobject has a mesh filter assigned, handle the swap
-        if (mf != null)
-        {
-            // store the name of this current mesh
-            oldMeshName = mf.sharedMesh.name;
-            if (oldMeshName != newMeshName) // as long as the swap mesh is different, swap it
-                if (fbxMeshes != null)
-                    foreach (Mesh mesh in fbxMeshes)// run through and find the source mesh we want to switch with
-                        if (mesh.name == newMeshName)// if we find the name of what we want to swap with in the fbx file
-                            mf.sharedMesh = mesh;// swap meshes
-        }
-        else
-        {
-            //this object doesnt have a mesh filter so lets see if it has any children
-            // if (thisGameObject.transform.childCount > 0)
-            // {
-            //     // collect all of its children
-            //     Transform[] allKids = thisGameObject.transform.GetComponentsInChildren<Transform>();
-            //     foreach (Transform kid in allKids)
-            //         SwitchMesh(kid.gameObject, newVersion);
-            // }
-        }
-
-
-    }
-
-    private void SwitchMesh(GameObject thisGameObject, int newVersion)
-    {
-        // Mesh[] fbxMeshes = GetFBXSource(thisGameObject);
-        // int resourceIndex = GetFBXResourceID(thisGameObject);
-
-        // handle the current selection
-        MeshFilter mf = thisGameObject.transform.GetComponent<MeshFilter>();
-
-        string oldMeshName;
-        string newMeshName;
-        // if this gameobject has a mesh filter assigned, handle the swap
-        if (mf != null)
-        {
-            // store the name of this current mesh
-            oldMeshName = mf.sharedMesh.name;
-            // newMeshName = ProcessNewName(resourceIndex, mf);
-            // if (oldMeshName != newMeshName) // as long as the swap mesh is different, swap it
-            //     if (fbxMeshes != null)
-            //         foreach (Mesh mesh in fbxMeshes)// run through and find the source mesh we want to switch with
-            //             if (mesh.name == newMeshName)// if we find the name of what we want to swap with in the fbx file
-            //                 mf.sharedMesh = mesh;// swap meshes
-        }
-        else
-        {
-            //this object doesnt have a mesh filter so lets see if it has any children
-            // if (thisGameObject.transform.childCount > 0)
-            // {
-            //     // collect all of its children
-            //     Transform[] allKids = thisGameObject.transform.GetComponentsInChildren<Transform>();
-            //     foreach (Transform kid in allKids)
-            //         SwitchMesh(kid.gameObject, newVersion);
-            // }
-        }
-
-
-    }
-
-
-
-    private Mesh[] GetFBXSource(GameObject selObject)
-    {
-        if (GetFBXResourceID(selObject) != -1)
-            return Resources.LoadAll<Mesh>(resourceString[GetFBXResourceID(selObject)]);
-        else
-            return null;
-    }
-
-    private int GetFBXResourceID(GameObject selObject)
-    {
-        if (selObject.transform.GetComponent<MeshFilter>() != null)
-        {
-            bool leavesMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("_L");
-            bool cardMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("_Card");
-            if (leavesMesh || cardMesh)
-                return 1;
-
-            bool trunkMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("_trunk");
-            if (trunkMesh)
-                return 2;
-
-            bool hiPlantMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("HP");
-            if (hiPlantMesh)
-                return 3;
-
-            bool grassMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("Grass");
-            if (grassMesh)
-                return 4;
-
-            bool flowerMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("Flowers");
-            if (flowerMesh)
-                return 5;
-
-            bool rockMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("Rocks");
-            if (rockMesh)
-                return 6;
-
-            bool scatterMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("Scatter");
-            if (scatterMesh)
-                return 7;
-
-            bool spruceMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("Spruce");
-            if (spruceMesh)
-                return 8;
-
-            return 0;// foliage
-        }
-        return -1;
-    }
-
-    private int GetSpeciesCount(GameObject selObject)
-    {
-        bool leavesMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("_L");
-        if (leavesMesh)
-            return leavesSpeciesCount;
-
-        bool cardMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("_Card");
-        if (cardMesh)
-            return cardSpeciesCount;
-
-        bool trunkMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("_trunk");
-        if (trunkMesh)
-            return trunkSpeciesCount;
-
-        bool hiPlantMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("HP");
-        if (hiPlantMesh)
-            return hiPlantSpeciesCount;
-
-        bool grassMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("Grasses");
-        if (grassMesh)
-            return grassSpeciesCount;
-
-        bool flowerMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("Flowers");
-        if (flowerMesh)
-            return flowerSpeciesCount;
-
-        bool rockMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("Rocks");
-        if (rockMesh)
-            return rockrSpeciesCount;
-
-        bool scatterMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("Scatter");
-        if (scatterMesh)
-            return scatterSpeciesCount;
-
-        bool spruceMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("Spruce");
-        if (spruceMesh)
-            return spruceSpeciesCount;
-
-        return foliageSpeciesCount;
-    }
-    private int GetFBXResourceMeshCount(GameObject selObject)
-    {
-        bool spruceMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("Spruce");
-        if (spruceMesh)
-            return spruceOptionsCount;
-
-        bool leavesMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("_L");
-        if (leavesMesh)
-            return leavesOptionsCount;
-
-        bool cardMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("_Card");
-        if (cardMesh)
-            return cardOptionsCount;
-
-        bool trunkMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("_trunk");
-        if (trunkMesh)
-            return trunkOptionsCount;
-
-        bool hiPlantMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("HP");
-        if (hiPlantMesh)
-            return hiPlantOptionsCount;
-
-        bool grassMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("Grasses");
-        if (grassMesh)
-            return grassOptionsCount;
-
-        bool flowerMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("Flowers");
-        if (flowerMesh)
-            return flowerOptionsCount;
-
-        bool rockMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("Rocks");
-        if (rockMesh)
-            return rockrOptionsCount;
-
-        bool scatterMesh = selObject.transform.GetComponent<MeshFilter>().sharedMesh.name.StartsWith("Scatter");
-        if (scatterMesh)
-            return scatterOptionsCount;
-
-        return foliageOptionsCount;
-
-    }
-
     public void SwitchTrunkVersion(string newVersion)
     {
         // only switch on the trunk mesh
         ChangeTreePrefab(newVersion);
-        //SwitchMesh(Selection.activeGameObject.transform.GetChild(0).gameObject, newVersion, "Trunks");
     }
 
     private void ChangeTreePrefab(string newVersion)
@@ -805,49 +522,6 @@ public class TM_ChangeMesh : EditorWindow
         // set the parent
         newObj.transform.parent = Selection.activeGameObject.transform;
     }
-
-    public void SwitchMeshVersion(int newVersion)
-    {
-        // run through all of the children of the current selection
-        foreach (GameObject g in Selection.gameObjects)
-            SwitchMesh(g, newVersion);
-
-    }
-
-    public void LoopThroughChildrenMaterials(GameObject currentGameObj)
-    {
-
-        // we know for certain we have children at this point, so loop through them
-        // and decide if we need to switch out meshes
-        for (int i = 0; i < currentGameObj.transform.childCount; i++)
-        {
-            //SwitchSpecies(currentGameObj.transform.GetChild(i).gameObject);
-
-            if (currentGameObj.transform.GetChild(i).transform.childCount > 0)
-            {
-                LoopThroughChildrenMaterials(currentGameObj.transform.GetChild(i).gameObject);
-            }
-        }
-    }
-
-    public void LoopThroughChildrenMaterials(GameObject currentGameObj, int newValue)
-    {
-
-        // we know for certain we have children at this point, so loop through them
-        // and decide if we need to switch out meshes
-        for (int i = 0; i < currentGameObj.transform.childCount; i++)
-        {
-            SwitchSpecies(currentGameObj.transform.GetChild(i).gameObject, newValue);
-
-            if (currentGameObj.transform.GetChild(i).transform.childCount > 0)
-            {
-                LoopThroughChildrenMaterials(currentGameObj.transform.GetChild(i).gameObject);
-            }
-        }
-    }
-
-
-
 
 }
 #endif
