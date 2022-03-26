@@ -9,11 +9,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boxophobic.Utils.Scripts", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boxophobic.TheVegetationEngine.Runtime", "Boxophobic.TheVegetationEngine.Runtime.csproj", "{0c7129e7-8209-13a1-ee1d-8bfb5d0b93c7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DE_ALP8310Controller", "DE_ALP8310Controller.csproj", "{b9ce5d32-6c7a-9feb-b3d4-6d8cbe3236c9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DE_ALP8310Controller.Global.Editor", "DE_ALP8310Controller.Global.Editor.csproj", "{033233b3-6189-47aa-cffa-53ad12423658}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AmplifyShaderEditor", "AmplifyShaderEditor.csproj", "{0690c51b-5f91-ca28-8a3d-d91887564bcd}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boxophobic.TheVegetationEngine.Editor", "Boxophobic.TheVegetationEngine.Editor.csproj", "{d09934c7-acf2-a1f2-a2d3-a47cc83fd776}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boxophobic.Utils.Editor", "Boxophobic.Utils.Editor.csproj", "{05647ce9-f6aa-af1c-5bb0-c7ff78cd1178}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{7101fbf2-67b3-8432-7516-4c6bba4fbc91}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,12 +34,18 @@ Global
 		{c5b07fc0-af46-3761-8168-d9e6ec6b4ca9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0c7129e7-8209-13a1-ee1d-8bfb5d0b93c7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0c7129e7-8209-13a1-ee1d-8bfb5d0b93c7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{b9ce5d32-6c7a-9feb-b3d4-6d8cbe3236c9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{b9ce5d32-6c7a-9feb-b3d4-6d8cbe3236c9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{033233b3-6189-47aa-cffa-53ad12423658}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{033233b3-6189-47aa-cffa-53ad12423658}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0690c51b-5f91-ca28-8a3d-d91887564bcd}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0690c51b-5f91-ca28-8a3d-d91887564bcd}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{d09934c7-acf2-a1f2-a2d3-a47cc83fd776}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{d09934c7-acf2-a1f2-a2d3-a47cc83fd776}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05647ce9-f6aa-af1c-5bb0-c7ff78cd1178}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{05647ce9-f6aa-af1c-5bb0-c7ff78cd1178}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7101fbf2-67b3-8432-7516-4c6bba4fbc91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7101fbf2-67b3-8432-7516-4c6bba4fbc91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
