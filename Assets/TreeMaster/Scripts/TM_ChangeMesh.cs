@@ -11,7 +11,7 @@ using UnityEditor;
 [ExecuteInEditMode]
 public class TM_ChangeMesh : EditorWindow
 {
-
+    private bool addFlowers;
     private int variety = 1, flowerVariety = 1, leafMaterial = 1, age = 1, trunk = 1, roots = 0, ivy = 0, ivyVariety = 1, vines = 0, vineVariety = 1, bark = 1, lichen = 0;
     private int varietyOld = 0, leavesOld = 1, ageOld = 1, trunkOld = 1, rootsOld = 0, ivyOld = 0, ivyVarietyOld = 1, vinesOld = 0, vineVarietyOld = 1, barkOld = 1, lichenOld = 0;
 
@@ -35,6 +35,7 @@ public class TM_ChangeMesh : EditorWindow
     private float leafScale = 1, oldLeafScale = 1;
     private float flowerScale = 1, oldFlowerScale = 1;
     private float trunkScale = 1, oldTrunkScale = 1;
+    private float trunkRotation = 1, oldTrunkRotation = 1;
     private float ivyScale = 1, oldIvyScale = 1;
     private float vineScale = 1, oldVineScale = 1;
 
@@ -58,6 +59,10 @@ public class TM_ChangeMesh : EditorWindow
 
     Vector2 scrollPos;
     private string nameToSearch;
+    private bool addRoots;
+    private float rootScale;
+    private float rootsRotation, oldRootsRotation;
+    private int rootsVariety, oldRootsVariety;
 
     public static void ShowWindow()
     {
@@ -102,6 +107,8 @@ public class TM_ChangeMesh : EditorWindow
                 // SwitchRoots(roots);
                 trunkScale = EditorGUILayout.Slider("Trunk Scale", trunkScale, 0.01f, trunkMaxScale);//scaling
                 ScaleTrunk(trunkScale);
+                trunkRotation = EditorGUILayout.Slider("Trunk Rotate", trunkRotation, -180f, 180f);//scaling
+                RotateTrunk(trunkRotation);
                 EditorGUILayout.Space();
 
                 GUILayout.Label("Foliage:", EditorStyles.boldLabel);
@@ -118,14 +125,33 @@ public class TM_ChangeMesh : EditorWindow
                 ScaleLeaves(leafScale);
                 EditorGUILayout.Space();
 
-                GUILayout.Label("Flowers:", EditorStyles.boldLabel);
-                EditorGUILayout.Space();
-                flowerVariety = EditorGUILayout.IntSlider("Variety", flowerVariety, 1, 9);//changes mesh UV
-                SwitchFlowerVariety(flowerVariety);
-                flowerScale = EditorGUILayout.Slider("Scale", flowerScale, 0.001f, flowersMaxScale);//scaling
-                ScaleFlowers(flowerScale);
-                EditorGUILayout.Space();
+                addFlowers = EditorGUILayout.Toggle("Add Flowers?", addFlowers);
+                EnableFlowers(addFlowers); // make sure we enable all the flowers if we want them
+                if (addFlowers)
+                {
+                    GUILayout.Label("Flowers:", EditorStyles.boldLabel);
+                    EditorGUILayout.Space();
 
+                    flowerVariety = EditorGUILayout.IntSlider("Variety", flowerVariety, 1, 9);//changes mesh UV
+                    SwitchFlowerVariety(flowerVariety);
+                    flowerScale = EditorGUILayout.Slider("Scale", flowerScale, 0.001f, flowersMaxScale);//scaling
+                    ScaleFlowers(flowerScale);
+                    EditorGUILayout.Space();
+                }
+
+                addRoots = EditorGUILayout.Toggle("Add Roots?", addRoots);
+                EnableRoots(addRoots); // make sure we enable all the flowers if we want them
+                if (addRoots)
+                {
+                    GUILayout.Label("Roots:", EditorStyles.boldLabel);
+                    EditorGUILayout.Space();
+                    rootsVariety = EditorGUILayout.IntSlider("Variety", rootsVariety, 1, 4);//changes mesh UV
+                    SwitchRootsVariety(rootsVariety);
+                    rootScale = EditorGUILayout.Slider("Roots Scale", rootScale, 0.01f, 3f);//scaling
+                    ScaleRoots(rootScale);
+                    rootsRotation = EditorGUILayout.Slider("Roots Rotate", rootsRotation, -180f, 180f);//scaling
+                    RotateRoots(rootsRotation);
+                }
                 // GUILayout.Label("Extras:", EditorStyles.boldLabel);
                 // GUILayout.Label(newExtraMeshName, EditorStyles.label);
                 // EditorGUILayout.Space();
@@ -190,7 +216,75 @@ public class TM_ChangeMesh : EditorWindow
         GUILayout.EndScrollView();
     }
 
+    private void SwitchRootsVariety(int rootsVarietyValue)
+    {
+        string varietyString = rootsVarietyValue < 10 ? "0" + rootsVarietyValue : rootsVarietyValue.ToString();
+        // now jump down to the roots object
+        GameObject rootsObj = Selection.activeGameObject.transform.GetChild(0).transform.GetChild(1).transform.gameObject;
 
+        Mesh[] fbxMeshes = Resources.LoadAll<Mesh>("Source Mesh/TM_Roots");
+        //only make changes if this is a leaf object
+        MeshFilter mf = rootsObj.GetComponent<MeshFilter>();
+        // if this gameobject has a mesh filter assigned, handle the swap
+        if (mf != null)
+        {
+            // store the name of this current mesh
+            string oldMeshName = mf.sharedMesh.name;
+            string newMeshName = mf.sharedMesh.name.Remove(mf.sharedMesh.name.Length - 2) + varietyString;
+
+            if (oldMeshName != newMeshName)
+            {
+                // as long as the swap mesh is different , swap it
+                if (fbxMeshes != null)
+                {
+                    foreach (Mesh mesh in fbxMeshes)
+                        if (mesh.name == newMeshName)// if we find the name of what we want to swap with in the fbx file
+                            mf.sharedMesh = mesh;// swap meshes
+                }
+            }
+        }
+    }
+
+
+
+
+    private void RotateRoots(float rootsRotationValue)
+    {
+        if (oldRootsRotation != rootsRotationValue)
+        {
+            Selection.activeGameObject.transform.GetChild(0).transform.GetChild(1).transform.localEulerAngles = new Vector3(0, rootsRotationValue, 0);
+            oldRootsRotation = rootsRotationValue;
+        }
+    }
+
+    private void ScaleRoots(float rootScaleValue)
+    {
+        if (oldTrunkScale != rootScaleValue)
+        {
+            Selection.activeGameObject.transform.GetChild(0).transform.GetChild(1).transform.localScale = new Vector3(rootScaleValue, rootScaleValue, rootScaleValue);
+            oldTrunkScale = rootScaleValue;
+        }
+    }
+
+    private void EnableRoots(bool addRoots)
+    {
+        List<MeshFilter> allRootRenderers = new List<MeshFilter>();
+        Selection.activeGameObject.transform.GetChild(0).transform.GetChild(1).transform.GetComponentsInChildren<MeshFilter>(true, allRootRenderers);
+
+        if (allRootRenderers != null)
+            foreach (MeshFilter mesh in allRootRenderers)
+                if (mesh.sharedMesh.name.StartsWith("Roots"))
+                    mesh.transform.gameObject.SetActive(addRoots);
+    }
+
+    private void RotateTrunk(float trunkRotationValue)
+    {
+        if (oldTrunkRotation != trunkRotationValue)
+        {
+            Selection.activeGameObject.transform.GetChild(0).transform.localEulerAngles = new Vector3(0, trunkRotationValue, 0);
+            oldTrunkRotation = trunkRotationValue;
+        }
+    }
 
     void Reset()
     {
@@ -263,6 +357,19 @@ public class TM_ChangeMesh : EditorWindow
             oldLeafScale = leafScaleValue;
         }
     }
+
+
+    private void EnableFlowers(bool addFlowers)
+    {
+        List<MeshRenderer> allFlowerRenderers = new List<MeshRenderer>();
+        Selection.activeGameObject.transform.GetComponentsInChildren<MeshRenderer>(true, allFlowerRenderers);
+
+        if (allFlowerRenderers != null)
+            foreach (MeshRenderer renderer in allFlowerRenderers)
+                if (renderer.sharedMaterial.name.StartsWith("Flowers"))
+                    renderer.transform.gameObject.SetActive(addFlowers);
+    }
+
 
     private void ScaleFlowers(float flowerScaleValue)
     {
