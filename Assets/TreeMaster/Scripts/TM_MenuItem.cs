@@ -40,6 +40,7 @@ namespace TreeMaster
             Selection.activeGameObject = newObj;
         }
 
+        #region Trees
         [MenuItem("GameObject/3D Object/TreeMaster/Trees/Redwood", false, 10)]
         private static void CreateTMTreeRW()
         {
@@ -56,6 +57,105 @@ namespace TreeMaster
             Selection.activeGameObject = newObj;
         }
 
+        [MenuItem("GameObject/3D Object/TreeMaster/Trees/Kapok", false, 10)]
+        private static void CreateTMTreeK()
+        {
+            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Trees/Tree_03", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
+            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+            Selection.activeGameObject = newObj;
+        }
+
+        [MenuItem("GameObject/3D Object/TreeMaster/Trees/Maple", false, 10)]
+        private static void CreateTMTreeM()
+        {
+            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Trees/Tree_04", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
+            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+            Selection.activeGameObject = newObj;
+        }
+
+        [MenuItem("GameObject/3D Object/TreeMaster/Trees/Bald Cypress", false, 10)]
+        private static void CreateTMTreeB()
+        {
+            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Trees/Tree_05", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
+            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+            Selection.activeGameObject = newObj;
+        }
+
+        [MenuItem("GameObject/3D Object/TreeMaster/Trees/Hickory", false, 10)]
+        private static void CreateTMTreeH()
+        {
+            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Trees/Tree_06", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
+            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+            Selection.activeGameObject = newObj;
+        }
+
+        [MenuItem("GameObject/3D Object/TreeMaster/Trees/Cypress Oak", false, 10)]
+        private static void CreateTMTreeCO()
+        {
+            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Trees/Tree_07", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
+            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+            Selection.activeGameObject = newObj;
+        }
+
+        [MenuItem("GameObject/3D Object/TreeMaster/Trees/Pine", false, 10)]
+        private static void CreateTMTreeP()
+        {
+            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Trees/Tree_08", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
+            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+            Selection.activeGameObject = newObj;
+        }
+
+        [MenuItem("GameObject/3D Object/TreeMaster/Trees/Spruce", false, 10)]
+        private static void CreateTMTreeSpr()
+        {
+            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Trees/Tree_09", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
+            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+            Selection.activeGameObject = newObj;
+        }
+
+        [MenuItem("GameObject/3D Object/TreeMaster/Trees/Acacia", false, 10)]
+        private static void CreateTMTreeAc()
+        {
+            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Trees/Tree_10", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
+            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+            Selection.activeGameObject = newObj;
+        }
+
+        [MenuItem("GameObject/3D Object/TreeMaster/Trees/Birch", false, 10)]
+        private static void CreateTMTreeBir()
+        {
+            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Trees/Tree_11", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
+            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+            Selection.activeGameObject = newObj;
+        }
+
+        [MenuItem("GameObject/3D Object/TreeMaster/Trees/Sapling 1", false, 10)]
+        private static void CreateTMTreeSap1()
+        {
+            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Trees/Tree_12", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
+            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+            Selection.activeGameObject = newObj;
+        }
+
+        [MenuItem("GameObject/3D Object/TreeMaster/Trees/Sapling 2", false, 10)]
+        private static void CreateTMTreeSap2()
+        {
+            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Trees/Tree_13", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
+            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+            Selection.activeGameObject = newObj;
+        }
+
+        [MenuItem("GameObject/3D Object/TreeMaster/Trees/Forest Tree", false, 10)]
+        private static void CreateTMTreeFor()
+        {
+            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Trees/Tree_14", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
+            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+            Selection.activeGameObject = newObj;
+        }
+
+
+        #endregion
+
         [MenuItem("GameObject/3D Object/TreeMaster/Add Controller", false, 10)]
         private static void CreateController()
         {
@@ -67,6 +167,7 @@ namespace TreeMaster
             Selection.activeGameObject = newObj;
         }
 
+        #region Groups
         [MenuItem("GameObject/3D Object/TreeMaster/Groups/Foliage Bundle", false, 30)]
         private static void CreateFoliageGroup()
         {
@@ -108,7 +209,9 @@ namespace TreeMaster
             Selection.activeGameObject = newObj;
         }
 
+        #endregion
 
+        #region Parts
 
         [MenuItem("GameObject/3D Object/TreeMaster/Parts/Leaf Plane", false, 50)]
         private static void CreateLeafPlane()
@@ -166,7 +269,17 @@ namespace TreeMaster
             Selection.activeGameObject = newObj;
         }
 
+        [MenuItem("GameObject/3D Object/TreeMaster/Parts/Roots", false, 50)]
+        private static void CreateRoots()
+        {
+            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Parts/Roots", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
+            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+            Selection.activeGameObject = newObj;
+        }
 
+        #endregion
+
+        #region Branches
 
         [MenuItem("GameObject/3D Object/TreeMaster/Branches/Acacia", false, 50)]
         private static void CreateBranchAcacia()
@@ -239,6 +352,8 @@ namespace TreeMaster
             PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
             Selection.activeGameObject = newObj;
         }
+        #endregion
+
         #endregion
 
     }

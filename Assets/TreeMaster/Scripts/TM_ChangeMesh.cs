@@ -577,6 +577,7 @@ public class TM_ChangeMesh : EditorWindow
         return System.IO.Directory.GetFiles(folder).Length / 2;
     }
 
+
     void SwitchBarkMaterial(string newVersion)
     {
         // switch the trunk material
@@ -592,6 +593,14 @@ public class TM_ChangeMesh : EditorWindow
         //make sure we have kids to loop through
         if (foliageObj.transform.childCount > 0)
             LoopThroughChildrenMaterials(foliageObj, newVersion, "Bark ", $"Materials/Barks/{newVersion}");
+
+        // switch the roots material
+        MeshRenderer rootsR = Selection.activeGameObject.transform.GetChild(0).transform.GetChild(1).gameObject.GetComponent<MeshRenderer>();
+        // if this gameobject has a mesh renderer assigned, handle the swap
+        if (rootsR != null)
+            if (rootsR.sharedMaterial.name.StartsWith("Bark "))
+                rootsR.material = GetNewMaterial($"Materials/Barks/{newVersion}");
+
     }
 
     private void SwitchLeafMaterial(int leafMaterial)
