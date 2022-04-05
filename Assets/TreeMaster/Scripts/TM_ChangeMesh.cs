@@ -42,7 +42,7 @@ public class TM_ChangeMesh : EditorWindow
 
     int trunkLichenOptions = 3;
     int trunkRootOptions = 3;
-    float trunkMaxScale = 100f;
+    float trunkMaxScale = 5f;
 
     int foliageVarietyOptions = 16;
     int foliageSeasonalOptions = 16;
@@ -82,8 +82,6 @@ public class TM_ChangeMesh : EditorWindow
         EditorGUILayout.Space();
         if (Selection.activeGameObject)
         {
-            // final verification that they are selected on the right thing
-
             // verify that we are selected on A TreeMaster Mesh before running any of the following methods
             if (Selection.activeGameObject.name != "TreeMaster")
             {
@@ -101,10 +99,6 @@ public class TM_ChangeMesh : EditorWindow
                 GUILayout.Label("Trunk:", EditorStyles.boldLabel);
                 bark = EditorGUILayout.IntSlider("Bark", bark, 1, GetTotalCount("Assets/TreeMaster/Resources/Materials/Barks"));//changes material
                 SwitchBark(bark);
-                // lichen = EditorGUILayout.IntSlider("Lichen", lichen, 0, trunkLichenOptions);//material
-                // SwitchLichen(lichen);
-                // roots = EditorGUILayout.IntSlider("Roots", roots, 0, trunkRootOptions);//changes mesh & material to match above
-                // SwitchRoots(roots);
                 trunkScale = EditorGUILayout.Slider("Trunk Scale", trunkScale, 0.01f, trunkMaxScale);//scaling
                 ScaleTrunk(trunkScale);
                 trunkRotation = EditorGUILayout.Slider("Trunk Rotate", trunkRotation, -180f, 180f);//scaling
@@ -113,14 +107,10 @@ public class TM_ChangeMesh : EditorWindow
 
                 GUILayout.Label("Foliage:", EditorStyles.boldLabel);
                 EditorGUILayout.Space();
-                // leafMesh = EditorGUILayout.IntSlider("Mesh Option", leafMesh, 1, foliageMeshOptions);//changes mesh option
-                // SwitchLeafMesh(leafMesh);
                 variety = EditorGUILayout.IntSlider("Variety", variety, 1, foliageVarietyOptions);//changes mesh UV
                 SwitchVariety(variety);
                 leafMaterial = EditorGUILayout.IntSlider("Leaf Material", leafMaterial, 1, GetTotalCount("Assets/TreeMaster/Resources/Materials/Leaves"));//changes material
                 SwitchLeafMaterial(leafMaterial);
-                // age = EditorGUILayout.IntSlider("Age", age, 1, foliageAgeOptions);//changes material
-                // SwitchAge(age);
                 leafScale = EditorGUILayout.Slider("Foliage Scale", leafScale, 0.001f, foliageMaxScale);//scaling
                 ScaleLeaves(leafScale);
                 EditorGUILayout.Space();
@@ -152,49 +142,36 @@ public class TM_ChangeMesh : EditorWindow
                     rootsRotation = EditorGUILayout.Slider("Roots Rotate", rootsRotation, -180f, 180f);//scaling
                     RotateRoots(rootsRotation);
                 }
-                // GUILayout.Label("Extras:", EditorStyles.boldLabel);
-                // GUILayout.Label(newExtraMeshName, EditorStyles.label);
-                // EditorGUILayout.Space();
-                // ivy = EditorGUILayout.IntSlider("Ivy Mesh", ivy, 0, extraIvyOptions);//changes mesh option
-                // SwitchIvy(ivy);
-                // ivyVariety = EditorGUILayout.IntSlider("Ivy Look", ivyVariety, 1, extraIvyVarietyOptions);// changes UV
-                // SwitchIvyVariety(ivyVariety);
-                // ivyScale = EditorGUILayout.Slider("Ivy Scale", ivyScale, 0.2f, extraMaxScale);//scaling
-                // ScaleIvy(ivyScale);
-
-                // vines = EditorGUILayout.IntSlider("Vine Mesh", vines, 0, extraVineOptions);//changes mesh option
-                // SwitchVines(vines);
-                // vineVariety = EditorGUILayout.IntSlider("Vine Look", vineVariety, 1, extraVineyVarietyOptions);// changes UV
-                // SwitchVineVariety(vineVariety);
-
-                // vineScale = EditorGUILayout.Slider("Vine Scale", vineScale, 0.2f, extraMaxScale);//scaling
-                // ScaleVine(vineScale);
-                // EditorGUILayout.Space();
-
-                // GUILayout.Label("Extras:", EditorStyles.boldLabel);
-                // GUILayout.Label(newExtraMeshName, EditorStyles.label);
-                // EditorGUILayout.Space();
-                // ivy = EditorGUILayout.IntSlider("Ivy Mesh", ivy, 0, extraIvyOptions);//changes mesh option
-                // SwitchIvy(ivy);
-                // ivyVariety = EditorGUILayout.IntSlider("Ivy Look", ivyVariety, 1, extraIvyVarietyOptions);// changes UV
-                // SwitchIvyVariety(ivyVariety);
-                // ivyScale = EditorGUILayout.Slider("Ivy Scale", ivyScale, 0.2f, extraMaxScale);//scaling
-                // ScaleIvy(ivyScale);
-
-                // vines = EditorGUILayout.IntSlider("Vine Mesh", vines, 0, extraVineOptions);//changes mesh option
-                // SwitchVines(vines);
-                // vineVariety = EditorGUILayout.IntSlider("Vine Look", vineVariety, 1, extraVineyVarietyOptions);// changes UV
-                // SwitchVineVariety(vineVariety);
-
-                // vineScale = EditorGUILayout.Slider("Vine Scale", vineScale, 0.2f, extraMaxScale);//scaling
-                // ScaleVine(vineScale);
                 EditorGUILayout.Space();
 
                 GUILayout.Label("Export", EditorStyles.boldLabel);
                 EditorGUILayout.Space();
-
                 EditorGUILayout.Space();
                 GUILayout.Label("Exported tree will be located in /TreeMaster/Exports/", EditorStyles.wordWrappedLabel);
+
+                EditorGUILayout.LabelField($"Total Vertex Count: {GetTotalVertexCount(Selection.activeGameObject).ToString()}", EditorStyles.boldLabel);
+
+                if (addFlowers)
+                {
+                    GUILayout.BeginHorizontal("box");
+                    if (GUILayout.Button("Reduce Flower Count by Quarter?", GUILayout.MaxHeight(50), GUILayout.MinHeight(50)))
+                        ReduceCurrentMeshCountByHalf(true, 4);
+                    if (GUILayout.Button("Reduce Flower Count by Half?", GUILayout.MaxHeight(50), GUILayout.MinHeight(50)))
+                        ReduceCurrentMeshCountByHalf(true, 2);
+                    GUILayout.EndHorizontal();
+                }
+
+
+                EditorGUILayout.Space();
+                GUILayout.BeginHorizontal("box");
+                if (GUILayout.Button("Reduce Foliage Count by Quarter?", GUILayout.MaxHeight(50), GUILayout.MinHeight(50)))
+                    ReduceCurrentMeshCountByHalf(false, 4);
+
+                if (GUILayout.Button("Reduce Foliage Count by Half?", GUILayout.MaxHeight(50), GUILayout.MinHeight(50)))
+                    ReduceCurrentMeshCountByHalf(false, 2);
+
+                GUILayout.EndHorizontal();
+                EditorGUILayout.Space();
 
                 if (GUILayout.Button("Save this tree preset", GUILayout.MaxHeight(50), GUILayout.MinHeight(50)))
                     ExportNewPreset();
@@ -214,6 +191,43 @@ public class TM_ChangeMesh : EditorWindow
 
         GUILayout.EndVertical();
         GUILayout.EndScrollView();
+    }
+
+    private void ReduceCurrentMeshCountByHalf(bool isFlowers, int amount)
+    {
+        // get all renderers from the foliage object
+        MeshRenderer[] meshRenderers = Selection.activeGameObject.transform.GetChild(0).transform.GetChild(0).GetComponentsInChildren<MeshRenderer>(false);
+        List<GameObject> removeList = new List<GameObject>();
+        if (meshRenderers != null && meshRenderers.Length > 0)
+        {
+            for (int i = 0; i < meshRenderers.Length; i++)
+            {
+                if (i % amount == 0)
+                {
+                    if (!isFlowers)
+                    {
+                        // make sure this has a mesh filter on it
+                        if (meshRenderers[i].sharedMaterial.name.StartsWith("Leaves") && meshRenderers[i].transform.name.StartsWith("Leaf"))
+                            removeList.Add(meshRenderers[i].gameObject);
+                    }
+                    else
+                    {
+
+                    }
+                    // make sure this has a mesh filter on it
+                    if (meshRenderers[i].sharedMaterial.name.StartsWith(isFlowers ? "Flowers" : "Leaves"))
+                        removeList.Add(meshRenderers[i].gameObject);
+
+                }
+            }
+        }
+
+        // now remove
+        foreach (GameObject obj in removeList)
+            obj.SetActive(false);
+
+        flowersReduced = true;
+        removeList.Clear();
     }
 
     private void SwitchRootsVariety(int rootsVarietyValue)
@@ -358,16 +372,20 @@ public class TM_ChangeMesh : EditorWindow
         }
     }
 
-
+    private bool flowersReduced = false;
     private void EnableFlowers(bool addFlowers)
     {
-        List<MeshRenderer> allFlowerRenderers = new List<MeshRenderer>();
-        Selection.activeGameObject.transform.GetComponentsInChildren<MeshRenderer>(true, allFlowerRenderers);
+        // once we have reduced the flowers, stop re-activating them
+        if (!flowersReduced)
+        {
+            List<MeshRenderer> allFlowerRenderers = new List<MeshRenderer>();
+            Selection.activeGameObject.transform.GetComponentsInChildren<MeshRenderer>(true, allFlowerRenderers);
 
-        if (allFlowerRenderers != null)
-            foreach (MeshRenderer renderer in allFlowerRenderers)
-                if (renderer.sharedMaterial.name.StartsWith("Flowers"))
-                    renderer.transform.gameObject.SetActive(addFlowers);
+            if (allFlowerRenderers != null)
+                foreach (MeshRenderer renderer in allFlowerRenderers)
+                    if (renderer.sharedMaterial.name.StartsWith("Flowers"))
+                        renderer.transform.gameObject.SetActive(addFlowers);
+        }
     }
 
 
@@ -695,7 +713,26 @@ public class TM_ChangeMesh : EditorWindow
     }
     #endregion
 
+    private int GetTotalVertexCount(GameObject selectedObject)
+    {
+        MeshRenderer[] meshRenderers = selectedObject.GetComponentsInChildren<MeshRenderer>(false);
+        int totalVertexCount = 0;
+        int totalMeshCount = 0;
 
+        if (meshRenderers != null && meshRenderers.Length > 0)
+        {
+            foreach (MeshRenderer meshRenderer in meshRenderers)
+            {
+                MeshFilter filter = meshRenderer.gameObject.GetComponent<MeshFilter>();
+                if (filter != null && filter.sharedMesh != null)
+                {
+                    totalVertexCount += filter.sharedMesh.vertexCount;
+                    totalMeshCount++;
+                }
+            }
+        }
+        return totalVertexCount;
+    }
 
     string GetNewVersionName(string inputString, char splitChar, int newVersion)
     {
@@ -717,6 +754,7 @@ public class TM_ChangeMesh : EditorWindow
 
     public void SwitchTrunkVersion(string newVersion)
     {
+        flowersReduced = false;
         // only switch on the trunk mesh
         ChangeTreePrefab(newVersion);
     }

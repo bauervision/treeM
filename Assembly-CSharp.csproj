@@ -66,6 +66,7 @@
      <None Include="Assets\BOXOPHOBIC\The Vegetation Engine\Core\Includes\VS_Indirect145.cginc" />
      <None Include="Assets\BOXOPHOBIC\The Vegetation Engine\Core\Shaders\Elements\Colors Default.shader" />
      <None Include="Assets\BOXOPHOBIC\The Vegetation Engine\Core\Shaders\Elements\Motion Wind Power.shader" />
+     <None Include="Assets\TreeMaster\Shaders\TM_Test.shader" />
      <None Include="Assets\BOXOPHOBIC\The Vegetation Engine\Core\Shaders\Vegetation\Cross Subsurface Lit.shader" />
      <None Include="Assets\BOXOPHOBIC\The Vegetation Engine\Core\Shaders\Fallback\Fallback.shader" />
      <None Include="Assets\BOXOPHOBIC\The Vegetation Engine\Core\Shaders\Helpers\Fresnel.shader" />
