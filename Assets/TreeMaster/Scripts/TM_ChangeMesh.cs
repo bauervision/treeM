@@ -15,12 +15,11 @@ public class TM_ChangeMesh : EditorWindow
     private int variety = 1, flowerVariety = 1, leafMaterial = 1, age = 1, trunk = 1, roots = 0, ivy = 0, ivyVariety = 1, vines = 0, vineVariety = 1, bark = 1, lichen = 0;
     private int varietyOld = 0, leavesOld = 1, ageOld = 1, trunkOld = 1, rootsOld = 0, ivyOld = 0, ivyVarietyOld = 1, vinesOld = 0, vineVarietyOld = 1, barkOld = 1, lichenOld = 0;
 
-    static string foliageStarter = "T!L_m01_v01_s01_a01";
+
     static string trunkStarter = "T!K_t01_b01_l00_r00";
     static string extrasStarter = "T!X_i00_l01_v00_k01";
 
-    ///<summary>T!L_m01_v01_s01_a01 </summary>
-    string foliageString = foliageStarter;//foliage mesh, variety, season, age
+
 
     ///<summary>T!K_t01_b01_l01_r01 </summary>
     string trunkString = trunkStarter;//trunk, bark, lichen, roots
@@ -29,7 +28,6 @@ public class TM_ChangeMesh : EditorWindow
     string extrasString = extrasStarter;//ivy mesh, ivy look, vine mesh, vine look
 
 
-    string newFoliageMeshName = foliageStarter;
     string newTrunkMeshName = trunkStarter;
     string newExtraMeshName = extrasStarter;
     private float leafScale = 1, oldLeafScale = 1;
@@ -63,6 +61,14 @@ public class TM_ChangeMesh : EditorWindow
     private float rootScale;
     private float rootsRotation, oldRootsRotation;
     private int rootsVariety, oldRootsVariety;
+
+    private string newName = System.String.Empty;
+    private string tempName = "TM_Tree_";
+    private List<GameObject> childrenOfTree = new List<GameObject>();
+
+    string placeholder = string.Empty;
+
+
 
     public static void ShowWindow()
     {
@@ -147,9 +153,14 @@ public class TM_ChangeMesh : EditorWindow
                 GUILayout.Label("Export", EditorStyles.boldLabel);
                 EditorGUILayout.Space();
                 EditorGUILayout.Space();
-                GUILayout.Label("Exported tree will be located in /TreeMaster/Exports/", EditorStyles.wordWrappedLabel);
 
-                EditorGUILayout.LabelField($"Total Vertex Count: {GetTotalVertexCount(Selection.activeGameObject).ToString()}", EditorStyles.boldLabel);
+
+                int totalVertCount = GetTotalVertexCount(Selection.activeGameObject);
+                if (totalVertCount > 65535)
+                    EditorGUILayout.LabelField($"Total Vertex Count: {totalVertCount.ToString()} MAX is 65,535! Cannot Export!", EditorStyles.boldLabel);
+                else
+                    EditorGUILayout.LabelField($"Total Vertex Count: {totalVertCount.ToString()}", EditorStyles.boldLabel);
+
 
                 if (addFlowers)
                 {
@@ -172,15 +183,44 @@ public class TM_ChangeMesh : EditorWindow
 
                 GUILayout.EndHorizontal();
                 EditorGUILayout.Space();
+                changeName = EditorGUILayout.Toggle("Change Tree name?", changeName);
+                if (changeName)
+                {
 
-                if (GUILayout.Button("Save this tree preset", GUILayout.MaxHeight(50), GUILayout.MinHeight(50)))
-                    ExportNewPreset();
+                    GUILayout.BeginVertical("box", GUILayout.ExpandHeight(false), GUILayout.ExpandWidth(true));
+
+                    newName = EditorGUILayout.TextField("Change Name to:", newName == string.Empty ? placeholder : newName);
+                    GUILayout.EndVertical();
+                    EditorGUILayout.Space();
+                }
+                else
+                    newName = tempName;
 
                 EditorGUILayout.Space();
-                if (GUILayout.Button("Reset", GUILayout.MaxHeight(30), GUILayout.MinHeight(30)))
-                    Reset();
+                if (GUILayout.Button("Save this tree prefab", GUILayout.MaxHeight(50), GUILayout.MinHeight(50)))
+                    SaveNewPrefab();
 
-                GUILayout.Label("Exported tree will be located in /TreeMaster/Exports/", EditorStyles.wordWrappedLabel);
+                EditorGUILayout.Space();
+                if (totalVertCount < 65535)
+                {
+
+
+
+
+                    if (GUILayout.Button("Export Collapsed Mesh for Terrains", GUILayout.MaxHeight(30), GUILayout.MinHeight(30)))
+                    {
+                        if (ExportForTerrain())// if save was successful
+                        {
+                            newName = string.Empty;
+                            tempName = string.Empty;
+                        }
+                        else
+                        {//save didnt happen
+                            Debug.Log("Save didn't go through");
+                        }
+                        GUILayout.Label("Exported tree will be located in /TreeMaster/Exports/", EditorStyles.wordWrappedLabel);
+                    }
+                }
             }
 
         }
@@ -300,30 +340,183 @@ public class TM_ChangeMesh : EditorWindow
         }
     }
 
-    void Reset()
+    bool ExportForTerrain()
     {
-        foliageString = foliageStarter;
-        trunkString = trunkStarter;
-        extrasString = extrasStarter;
+        GameObject selected = Selection.activeGameObject;
 
-        leafScale = 1; oldLeafScale = 1;
-        trunkScale = 1; oldTrunkScale = 1;
-        ivyScale = 1; oldIvyScale = 1;
-        vineScale = 1; oldVineScale = 1;
+        MeshRenderer[] meshRenderers = selected.GetComponentsInChildren<MeshRenderer>(false);
+
+        Mesh mesh = new Mesh();
+        Matrix4x4 myTransform = selected.transform.worldToLocalMatrix;
+        List<Vector3> vertices = new List<Vector3>();
+        List<Vector3> normals = new List<Vector3>();
+        List<Vector2> uv1s = new List<Vector2>();
+        List<Vector2> uv2s = new List<Vector2>();
+        Dictionary<Material, List<int>> subMeshes = new Dictionary<Material, List<int>>();
+
+        if (meshRenderers != null && meshRenderers.Length > 0)
+        {
+            foreach (MeshRenderer meshRenderer in meshRenderers)
+            {
+                MeshFilter filter = meshRenderer.gameObject.GetComponent<MeshFilter>();
+                if (filter != null && filter.sharedMesh != null)
+                {
+                    MergeMeshInto(filter.sharedMesh, meshRenderer.sharedMaterials, myTransform * filter.transform.localToWorldMatrix, vertices, normals, uv1s, uv2s, subMeshes);
+                    //add each child to the children list to delete at the very end
+                    if (filter.gameObject != selected)
+                        childrenOfTree.Add(filter.gameObject);
+                }
+            }
+        }
+
+        mesh.vertices = vertices.ToArray();
+        if (normals.Count > 0)
+            mesh.normals = normals.ToArray();
+        if (uv1s.Count > 0)
+            mesh.uv = uv1s.ToArray();
+
+        mesh.subMeshCount = subMeshes.Keys.Count;
+        Material[] materials = new Material[subMeshes.Keys.Count];
+        int mIdx = 0;
+
+        foreach (Material m in subMeshes.Keys)
+        {
+            materials[mIdx] = m;
+            mesh.SetTriangles(subMeshes[m].ToArray(), mIdx++);
+        }
+
+        if (meshRenderers != null && meshRenderers.Length > 0)
+        {
+            MeshRenderer meshRend = selected.GetComponent<MeshRenderer>();
+            if (meshRend == null)
+                meshRend = selected.AddComponent<MeshRenderer>();
+            meshRend.sharedMaterials = materials;
+
+            MeshFilter meshFilter = selected.GetComponent<MeshFilter>();
+            if (meshFilter == null)
+                meshFilter = selected.AddComponent<MeshFilter>();
+            meshFilter.sharedMesh = mesh;
+
+            //Store new combined mesh asset
+            Mesh _mesh = new Mesh();
+            string path = "";
+            string optimizedMeshPath = "Assets/TreeMaster/My Library/Terrain Ready/Mesh Data";
+            path = optimizedMeshPath + "/" + (changeName ? newName : selected.name) + ".asset";
+
+            AssetDatabase.CreateAsset(selected.GetComponent<MeshFilter>().sharedMesh, path);
+
+            /* handle new prefab*/
+
+            // dig out the mesh asset we just saved 
+            _mesh = (Mesh)AssetDatabase.LoadAssetAtPath(path, typeof(Mesh));
+
+            // create a freah new game object
+            GameObject newMeshToSave = new GameObject("new");
+            // set it up
+            newMeshToSave.AddComponent<MeshFilter>();
+            newMeshToSave.GetComponent<MeshFilter>().sharedMesh = _mesh;
+            newMeshToSave.AddComponent<MeshRenderer>();
+            newMeshToSave.GetComponent<MeshRenderer>().materials = materials;
+            newMeshToSave.GetComponent<MeshRenderer>().sharedMaterial = selected.GetComponent<MeshRenderer>().sharedMaterial;
+
+            /* Begin to set up the LOD aspect */
+
+            // create the empty parent
+            GameObject go = new GameObject("Parent");
+            newMeshToSave.transform.parent = go.transform;
 
 
-        variety = 1; leafMaterial = 1; age = 1; varietyOld = 1; leavesOld = 1; ageOld = 1;
-        trunk = 1; roots = 0; bark = 1; lichen = 0; trunkOld = 1; rootsOld = 0; barkOld = 1; lichenOld = 0;
-        ivy = 0; ivyVariety = 1; vines = 0; vineVariety = 1; ivyOld = 0; ivyVarietyOld = 1; vinesOld = 0; vineVarietyOld = 1;
+            // add LOD
+            go.AddComponent<LODGroup>();
+            MeshRenderer[] newMR = go.GetComponentsInChildren<MeshRenderer>();
+            // set the initial cull to 10%
+            LOD[] initialLOD = new LOD[] { new LOD(10f / 100f, newMR) };
+            go.GetComponent<LODGroup>().SetLODs(initialLOD);
+
+            go.name = changeName ? newName : tempName;
+            newMeshToSave.name = (changeName ? newName : tempName) + "_coreMesh_LOD0";
+
+            string prefabPath = "";
+            string optimizedPath = "Assets/TreeMaster/My Library/Terrain Ready";
+            prefabPath = optimizedPath + "/" + (changeName ? newName : go.name) + ".prefab";
+
+            GameObject successObject = PrefabUtility.SaveAsPrefabAsset(go, prefabPath);
+            //finally remove the newly added renderer and mesh filter from the tree master controller
+            DestroyImmediate(meshRend);
+            DestroyImmediate(meshFilter);
+            // reset active selection
+            Selection.activeGameObject = selected;
+            DestroyImmediate(go);
+
+            return (successObject != null);
+        }
+
+        return false;
     }
 
-    void ExportNewPreset()
+    private void MergeMeshInto(Mesh meshToMerge, Material[] ms, Matrix4x4 transformMatrix, List<Vector3> vertices, List<Vector3> normals, List<Vector2> uv1s, List<Vector2> uv2s, Dictionary<Material, List<int>> subMeshes)
     {
-        Debug.Log("Export Trunk Mesh: " + newTrunkMeshName + " scaled: " + oldTrunkScale + "%");
-        Debug.Log("Export Foliage Mesh: " + newFoliageMeshName + " scaled: " + oldLeafScale + "%");
-        Debug.Log("Export Extra Mesh: " + newExtraMeshName);
+        if (meshToMerge == null)
+            return;
+        int vertexOffset = vertices.Count;
+        Vector3[] vs = meshToMerge.vertices;
 
+        for (int i = 0; i < vs.Length; i++)
+        {
+            vs[i] = transformMatrix.MultiplyPoint3x4(vs[i]);
+        }
+        vertices.AddRange(vs);
 
+        Quaternion rotation = Quaternion.LookRotation(transformMatrix.GetColumn(2), transformMatrix.GetColumn(1));
+        Vector3[] ns = meshToMerge.normals;
+        if (ns != null && ns.Length > 0)
+        {
+            for (int i = 0; i < ns.Length; i++)
+                ns[i] = rotation * ns[i];
+            normals.AddRange(ns);
+        }
+
+        Vector2[] uvs = meshToMerge.uv;
+        if (uvs != null && uvs.Length > 0)
+            uv1s.AddRange(uvs);
+        uvs = meshToMerge.uv2;
+        if (uvs != null && uvs.Length > 0)
+            uv2s.AddRange(uvs);
+
+        for (int i = 0; i < ms.Length; i++)
+        {
+            if (i < meshToMerge.subMeshCount)
+            {
+                int[] ts = meshToMerge.GetTriangles(i);
+                if (ts.Length > 0)
+                {
+                    if (ms[i] != null && !subMeshes.ContainsKey(ms[i]))
+                    {
+                        subMeshes.Add(ms[i], new List<int>());
+                    }
+                    List<int> subMesh = subMeshes[ms[i]];
+                    for (int t = 0; t < ts.Length; t++)
+                    {
+                        ts[t] += vertexOffset;
+                    }
+                    subMesh.AddRange(ts);
+                }
+            }
+        }
+    }
+    void SaveNewPrefab()
+    {
+        string prefabPathBase = "Assets/TreeMaster/My Library/Prefabs";
+        string prefabPath;
+        // we want to save the actual tree object, not the treemaster controller
+        GameObject selected = Selection.activeGameObject.transform.GetChild(0).gameObject;
+
+        if (changeName)
+            prefabPath = prefabPathBase + "/" + newName + ".prefab";
+        else
+            prefabPath = prefabPathBase + "/" + selected.name + ".prefab";
+
+        PrefabUtility.SaveAsPrefabAsset(selected, prefabPath);
     }
 
     #region Scaling
@@ -373,6 +566,8 @@ public class TM_ChangeMesh : EditorWindow
     }
 
     private bool flowersReduced = false;
+    private bool changeName;
+
     private void EnableFlowers(bool addFlowers)
     {
         // once we have reduced the flowers, stop re-activating them
@@ -412,16 +607,6 @@ public class TM_ChangeMesh : EditorWindow
     #endregion
 
     #region Foliage
-
-
-    private void SwitchAge(int newAge)
-    {
-        if (newAge != ageOld)
-        {
-            foliageString = newFoliageMeshName = GetNewVersionName(foliageString, 'a', newAge);
-            ageOld = newAge;
-        }
-    }
 
 
     public void SwitchVariety(int newVariety)
