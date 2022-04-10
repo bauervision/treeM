@@ -79,7 +79,11 @@ public class TM_ChangeMesh : EditorWindow
 
     }
 
+    string[] branchTypes = new string[] { "TM_Trunk", "ABranch", "CBranch", "DBranch", "GBranch", "KBranch", "MBranch", "PBranch", "RWBranch", "SBranch", "Thin_Branch" };
 
+    int[] branchOptionCount = new int[] { 19, 8, 7, 3, 9, 6, 7, 6, 8, 8, 7 };
+
+    int selectionMesh = 0;
     void OnGUI()
     {
         scrollPos = GUILayout.BeginScrollView(scrollPos);
@@ -91,8 +95,29 @@ public class TM_ChangeMesh : EditorWindow
             // verify that we are selected on A TreeMaster Mesh before running any of the following methods
             if (Selection.activeGameObject.name != "TreeMaster")
             {
-                GUILayout.Label("Not a TreeMaster Mesh", EditorStyles.boldLabel);
-                EditorGUILayout.Space();
+                // this isnt a TreeMaster mesh selection so we dont need to see the main controls
+                // but this might be a Branch selection
+                int selectionStatus = CheckSelectedMeshStatus();
+                // this is a TM Branch
+                if (selectionStatus != -1)
+                {
+                    GUILayout.Label(branchTypes[selectionStatus] + " Selected", EditorStyles.boldLabel);
+                    EditorGUILayout.Space();
+                    GUILayout.Label("This selection has " + branchOptionCount[selectionStatus] + " additioanl meshes", EditorStyles.label);
+                    EditorGUILayout.Space();
+                    if (Selection.activeGameObject.transform.childCount > 0)
+                        GUILayout.Label("NOTE: this will change the placement of all foliage children, you may need to adjust them afterwards", EditorStyles.wordWrappedLabel);
+
+                    int currentMeshIndex = GetCurrentMeshIndex();
+                    selectionMesh = EditorGUILayout.IntSlider("Mesh Selection", currentMeshIndex, 1, branchOptionCount[selectionStatus]);//changes mesh
+                    SwitchSelectionMesh(selectionStatus, selectionMesh);
+                }
+                else
+                {
+                    GUILayout.Label("Not a TreeMaster Mesh", EditorStyles.boldLabel);
+                    EditorGUILayout.Space();
+                }
+
             }
             else
             {
@@ -203,10 +228,6 @@ public class TM_ChangeMesh : EditorWindow
                 EditorGUILayout.Space();
                 if (totalVertCount < 65535)
                 {
-
-
-
-
                     if (GUILayout.Button("Export Collapsed Mesh for Terrains", GUILayout.MaxHeight(30), GUILayout.MinHeight(30)))
                     {
                         if (ExportForTerrain())// if save was successful
@@ -231,6 +252,119 @@ public class TM_ChangeMesh : EditorWindow
 
         GUILayout.EndVertical();
         GUILayout.EndScrollView();
+    }
+
+    private int GetCurrentMeshIndex()
+    {
+        // grab the last 2 characters off the name
+        MeshFilter mf = Selection.activeGameObject.GetComponent<MeshFilter>();
+        // store the name of this current mesh
+        string currentMeshName = mf.sharedMesh.name;
+        string last2chars = currentMeshName.Substring(currentMeshName.Length - 2);
+        int meshNumber = -1;
+        bool success = int.TryParse(last2chars, out meshNumber);
+        if (success)
+            return meshNumber;
+        else
+        {
+            // we failed to parse the number so this must be only a single digit
+            string lastChar = currentMeshName.Substring(currentMeshName.Length - 1);
+            int singleMeshNumber = -1;
+            bool successSingle = int.TryParse(lastChar, out singleMeshNumber);
+            return singleMeshNumber;
+        }
+
+
+    }
+
+    private int GetNumberToRemoveFromString(string currentName)
+    {
+        // grab the last 2 characters off the name
+        string last2chars = currentName.Substring(currentName.Length - 2);
+        int meshNumber = -1;
+        bool success = int.TryParse(last2chars, out meshNumber);
+        if (success)
+            return 2;
+        else
+        {
+            // we failed to parse the number so this must be only a single digit
+            string lastChar = currentName.Substring(currentName.Length - 1);
+            int singleMeshNumber = -1;
+            bool successSingle = int.TryParse(lastChar, out singleMeshNumber);
+            return 1;
+        }
+    }
+
+    private void SwitchSelectionMesh(int selectionStatus, int selectionMeshVariety)
+    {
+
+        // if we are selected on a trunk, we need to load a different file
+        Mesh[] fbxMeshes = selectionStatus == 0 ? Resources.LoadAll<Mesh>("Source Mesh/TM_Trunks") : Resources.LoadAll<Mesh>("Source Mesh/TM_Branches");
+        // make sure we have a mesh filter
+        MeshFilter mf = Selection.activeGameObject.GetComponent<MeshFilter>();
+        // if this gameobject has a mesh filter assigned, handle the swap
+        if (mf != null)
+        {
+            // store the name of this current mesh
+            string oldMeshName = mf.sharedMesh.name;
+            //remove either 1 or 2 chars
+            string varietyString = (selectionMeshVariety < 10 && GetNumberToRemoveFromString(oldMeshName) == 2) ? "0" + selectionMeshVariety : selectionMeshVariety.ToString();
+            string newMeshName = oldMeshName.Remove(oldMeshName.Length - GetNumberToRemoveFromString(oldMeshName)) + varietyString;
+
+            // as long as the swap mesh is different , swap it
+            if (oldMeshName != newMeshName)
+            {
+                Selection.activeGameObject.name = newMeshName;
+                if (fbxMeshes != null)
+                {
+                    foreach (Mesh mesh in fbxMeshes)
+                        if (mesh.name == newMeshName)// if we find the name of what we want to swap with in the fbx file
+                            mf.sharedMesh = mesh;// swap meshes
+                }
+            }
+        }
+    }
+
+    int CheckSelectedMeshStatus()
+    {
+        int status = -1;//nothing we recognize
+        MeshFilter mf = Selection.activeGameObject.GetComponent<MeshFilter>();
+        // if this gameobject has a mesh filter assigned, handle the swap
+        if (mf != null)
+        {
+            //branchTypes.ToList().FindIndex(0, 1, Selection.activeGameObject.name)
+            if (mf.sharedMesh.name.StartsWith("TM_Trunk"))
+                status = 0;
+
+            else if (mf.sharedMesh.name.StartsWith("ABranch"))
+                status = 1;
+
+            else if (mf.sharedMesh.name.StartsWith("CBranch"))
+                status = 2;
+            else if (mf.sharedMesh.name.StartsWith("DBranch"))
+                status = 3;
+            else if (mf.sharedMesh.name.StartsWith("GBranch"))
+                status = 4;
+            else if (mf.sharedMesh.name.StartsWith("KBranch"))
+                status = 5;
+            else if (mf.sharedMesh.name.StartsWith("MBranch"))
+                status = 6;
+            else if (mf.sharedMesh.name.StartsWith("PBranch"))
+                status = 7;
+            else if (mf.sharedMesh.name.StartsWith("RWBranch"))
+                status = 8;
+            else if (mf.sharedMesh.name.StartsWith("SBranch"))
+                status = 9;
+            else if (mf.sharedMesh.name.StartsWith("Thin_Branch"))
+                status = 10;
+            else if (mf.sharedMesh.name.StartsWith("BranchMask"))
+                status = 11;
+
+
+
+
+        }
+        return status;
     }
 
     private void ReduceCurrentMeshCountByHalf(bool isFlowers, int amount)
@@ -298,9 +432,6 @@ public class TM_ChangeMesh : EditorWindow
             }
         }
     }
-
-
-
 
     private void RotateRoots(float rootsRotationValue)
     {
