@@ -13,8 +13,8 @@ public class TM_CollapseMesh : EditorWindow
     private string newName = System.String.Empty;
     private string tempName = "_optimized";
     private List<GameObject> childrenOfTree = new List<GameObject>();
-    private string optimizedPath = "Assets/TreeMaster/Optimized";
-    private string optimizedMeshPath = "Assets/TreeMaster/Optimized/Meshes";
+    private string optimizedPath = "Assets/TreeMaster/Terrain Ready";
+    private string optimizedMeshPath = "Assets/TreeMaster/Terrain Ready/Mesh Data";
     string placeholder = string.Empty;
 
 
