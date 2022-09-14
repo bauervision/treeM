@@ -39,7 +39,6 @@
      <Compile Include="Assets\TreeMaster\Scripts\TM_Renamer.cs" />
      <Compile Include="Assets\TreeMaster\Scripts\FBXExporter.cs" />
      <Compile Include="Assets\TreeMaster\Scripts\TM_Screenshots.cs" />
-     <Compile Include="Assets\TreeMaster\Scripts\TM_SwapMaterial.cs" />
      <Compile Include="Assets\TreeMaster\Scripts\ExporterMenu.cs" />
      <Compile Include="Assets\BOXOPHOBIC\The Vegetation Engine\Demo\Scripts\TVESimpleFPSController.cs" />
      <Compile Include="Assets\TreeMaster\Scripts\TM_MenuItem.cs" />

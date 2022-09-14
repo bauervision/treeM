@@ -43,7 +43,7 @@ public class TM_ChangeMesh : EditorWindow
     float trunkMaxScale = 5f;
 
     int foliageVarietyOptions = 64;
-    float foliageMaxScale = 1f;
+    float foliageMaxScale = 2f;
     float flowersMaxScale = 2f;
 
 
@@ -69,7 +69,7 @@ public class TM_ChangeMesh : EditorWindow
         EditorWindow editorWindow = EditorWindow.GetWindow(typeof(TM_ChangeMesh));
         editorWindow.autoRepaintOnSceneChange = true;
         editorWindow.Show();
-        editorWindow.titleContent = new GUIContent("Change Mesh");
+        editorWindow.titleContent = new GUIContent("Edit Tree");
 
     }
 
@@ -83,6 +83,11 @@ public class TM_ChangeMesh : EditorWindow
     private static EditorWindow gameWindow;
 
     private Material skyboxMaterial;
+
+    bool showEditors = true;
+    bool showAnalysis = false;
+    bool showExport = false;
+    int totalVertCount;
     void OnGUI()
     {
         scrollPos = GUILayout.BeginScrollView(scrollPos);
@@ -213,153 +218,170 @@ public class TM_ChangeMesh : EditorWindow
             }
             else
             {
-
                 EditorGUILayout.Space();
-                GUILayout.Label("Tree:", EditorStyles.boldLabel);
-                int currentTreeIndex = GetCurrentTreeIndex();
-                trunk = EditorGUILayout.IntSlider("Type", currentTreeIndex, 1, GetTotalCount("Assets/TreeMaster/Resources/Trees"));//changes tree version
-                SwitchTrunk(trunk);
+                GUILayout.Label("Welcome to Tree Master", EditorStyles.boldLabel);
                 EditorGUILayout.Space();
-                GUILayout.Label("Trunk:", EditorStyles.boldLabel);
-                bark = EditorGUILayout.IntSlider("Bark", bark, 1, GetTotalCount("Assets/TreeMaster/Resources/Materials/Barks"));//changes material
-                SwitchBark(bark);
-                trunkScale = EditorGUILayout.Slider("Trunk Scale", trunkScale, 0.01f, trunkMaxScale);//scaling
-                ScaleTrunk(trunkScale);
-                trunkRotation = EditorGUILayout.Slider("Trunk Rotate", trunkRotation, -180f, 180f);//scaling
-                RotateTrunk(trunkRotation);
-                EditorGUILayout.Space();
-
-                GUILayout.Label("Foliage:", EditorStyles.boldLabel);
-                EditorGUILayout.Space();
-                int currentFoliageVariety = GetCurrentFoliageIndex();
-                variety = EditorGUILayout.IntSlider("Variety", currentFoliageVariety, 1, foliageVarietyOptions);//changes mesh UV
-                SwitchVariety(variety);
-                leafMaterial = EditorGUILayout.IntSlider("Leaf Material", leafMaterial, 1, GetTotalCount("Assets/TreeMaster/Resources/Materials/Leaves"));//changes material
-                SwitchLeafMaterial(leafMaterial);
-
-                leafScale = EditorGUILayout.Slider("Foliage Scale", leafScale, 0.001f, foliageMaxScale);//scaling
-                ScaleLeaves(leafScale);
-                EditorGUILayout.Space();
-
-                addFlowers = EditorGUILayout.Toggle("Add Flowers?", addFlowers);
-                EnableFlowers(addFlowers); // make sure we enable all the flowers if we want them
-                if (addFlowers)
+                showEditors = EditorGUILayout.Foldout(showEditors, "Show Editing Sliders");
+                if (showEditors)
                 {
-                    GUILayout.Label("Flowers:", EditorStyles.boldLabel);
+
+                    GUILayout.Label("Tree:", EditorStyles.boldLabel);
+                    int currentTreeIndex = GetCurrentTreeIndex();
+                    trunk = EditorGUILayout.IntSlider("Type", currentTreeIndex, 1, GetTotalCount("Assets/TreeMaster/Resources/Trees"));//changes tree version
+                    SwitchTrunk(trunk);
+                    EditorGUILayout.Space();
+                    GUILayout.Label("Trunk:", EditorStyles.boldLabel);
+                    bark = EditorGUILayout.IntSlider("Bark", bark, 1, GetTotalCount("Assets/TreeMaster/Resources/Materials/Barks"));//changes material
+                    SwitchBark(bark);
+                    trunkScale = EditorGUILayout.Slider("Trunk Scale", trunkScale, 0.01f, trunkMaxScale);//scaling
+                    ScaleTrunk(trunkScale);
+                    trunkRotation = EditorGUILayout.Slider("Trunk Rotate", trunkRotation, -180f, 180f);//scaling
+                    RotateTrunk(trunkRotation);
                     EditorGUILayout.Space();
 
-                    flowerVariety = EditorGUILayout.IntSlider("Variety", flowerVariety, 1, 9);//changes mesh UV
-                    SwitchFlowerVariety(flowerVariety);
-                    flowerScale = EditorGUILayout.Slider("Scale", flowerScale, 0.001f, flowersMaxScale);//scaling
-                    ScaleFlowers(flowerScale);
+                    GUILayout.Label("Foliage:", EditorStyles.boldLabel);
                     EditorGUILayout.Space();
-                }
+                    int currentFoliageVariety = GetCurrentFoliageIndex();
+                    variety = EditorGUILayout.IntSlider("Variety", currentFoliageVariety, 1, foliageVarietyOptions);//changes mesh UV
+                    SwitchVariety(variety);
+                    leafMaterial = EditorGUILayout.IntSlider("Leaf Material", leafMaterial, 1, GetTotalCount("Assets/TreeMaster/Resources/Materials/Leaves"));//changes material
+                    SwitchLeafMaterial(leafMaterial);
 
-                addRoots = EditorGUILayout.Toggle("Add Roots?", addRoots);
-                EnableRoots(addRoots); // make sure we enable all the flowers if we want them
-                if (addRoots)
-                {
-                    GUILayout.Label("Roots:", EditorStyles.boldLabel);
+                    leafScale = EditorGUILayout.Slider("Foliage Scale", leafScale, 0.001f, foliageMaxScale);//scaling
+                    ScaleLeaves(leafScale);
                     EditorGUILayout.Space();
-                    rootsVariety = EditorGUILayout.IntSlider("Variety", rootsVariety, 1, 4);//changes mesh UV
-                    SwitchRootsVariety(rootsVariety);
-                    rootScale = EditorGUILayout.Slider("Roots Scale", rootScale, 0.01f, 3f);//scaling
-                    ScaleRoots(rootScale);
-                    rootsRotation = EditorGUILayout.Slider("Roots Rotate", rootsRotation, -180f, 180f);//scaling
-                    RotateRoots(rootsRotation);
-                }
-                EditorGUILayout.Space();
-                GUILayout.Label("Export", EditorStyles.boldLabel);
-                EditorGUILayout.Space();
 
-                if (GUILayout.Button("Save as New Tree Template", GUILayout.MaxHeight(50), GUILayout.MinHeight(50)))
-                    SaveNewTreeTemplate();
-                EditorGUILayout.Space();
-
-
-                int totalVertCount = GetTotalVertexCount(Selection.activeGameObject);
-                if (totalVertCount > 65535)
-                    EditorGUILayout.LabelField($"Total Vertex Count: {totalVertCount.ToString()} MAX is 65,535! Cannot Export!", EditorStyles.boldLabel);
-                else
-                    EditorGUILayout.LabelField($"Total Vertex Count: {totalVertCount.ToString()}", EditorStyles.boldLabel);
-                EditorGUILayout.Space();
-                EditorGUILayout.Space();
-                GUILayout.Label($"Draw Calls on Current: {GetDrawCallsOnCurrent(Selection.activeGameObject)}", EditorStyles.boldLabel);
-                EditorGUILayout.Space();
-                GUILayout.Label("To properly examine draw calls, it's best to have only one object in your scene!", EditorStyles.label);
-                GUILayout.Label("It also calculates properly with the Game View being active", EditorStyles.label);
-                EditorGUILayout.Space();
-                if (GUILayout.Button(!sceneConfiguredForDrawCalls ? "Configure Scene to Analyze Draw Calls" : "Restore Scene", GUILayout.MaxHeight(50), GUILayout.MinHeight(50)))
-                {
-                    ConfigureSceneForDrawCalls();
-                    sceneConfiguredForDrawCalls = !sceneConfiguredForDrawCalls;
-                }
-
-                EditorGUILayout.Space();
-
-                if (addFlowers)
-                {
-                    GUILayout.BeginHorizontal("box");
-                    if (GUILayout.Button("Reduce Flower Count by Quarter?", GUILayout.MaxHeight(50), GUILayout.MinHeight(50)))
-                        ReduceCurrentMeshCountByHalf(true, 4);
-                    if (GUILayout.Button("Reduce Flower Count by Half?", GUILayout.MaxHeight(50), GUILayout.MinHeight(50)))
-                        ReduceCurrentMeshCountByHalf(true, 2);
-                    GUILayout.EndHorizontal();
-                }
-
-
-                EditorGUILayout.Space();
-                GUILayout.BeginHorizontal("box");
-                if (GUILayout.Button("Reduce Foliage Count by Quarter?", GUILayout.MaxHeight(50), GUILayout.MinHeight(50)))
-                    ReduceCurrentMeshCountByHalf(false, 4);
-
-                if (GUILayout.Button("Reduce Foliage Count by Half?", GUILayout.MaxHeight(50), GUILayout.MinHeight(50)))
-                    ReduceCurrentMeshCountByHalf(false, 2);
-
-                GUILayout.EndHorizontal();
-
-
-
-                EditorGUILayout.Space();
-                changeName = EditorGUILayout.Toggle("Change Prefab Tree name?", changeName);
-                if (changeName)
-                {
-
-                    GUILayout.BeginVertical("box", GUILayout.ExpandHeight(false), GUILayout.ExpandWidth(true));
-
-                    newName = EditorGUILayout.TextField("Change Name to:", newName == string.Empty ? placeholder : newName);
-                    GUILayout.EndVertical();
-                    EditorGUILayout.Space();
-                }
-                else
-                    newName = tempName;
-
-
-
-                EditorGUILayout.Space();
-                if (GUILayout.Button("Save this Tree Prefab", GUILayout.MaxHeight(50), GUILayout.MinHeight(50)))
-                    SaveNewPrefab();
-
-                EditorGUILayout.Space();
-                if (totalVertCount < 65535)
-                {
-                    if (GUILayout.Button("Export Collapsed Mesh for Terrains", GUILayout.MaxHeight(30), GUILayout.MinHeight(30)))
+                    addFlowers = EditorGUILayout.Toggle("Add Flowers?", addFlowers);
+                    EnableFlowers(addFlowers); // make sure we enable all the flowers if we want them
+                    if (addFlowers)
                     {
-                        if (ExportForTerrain(true, newName))// if save was successful
-                        {
-                            newName = string.Empty;
-                            tempName = string.Empty;
-                        }
-                        else
-                        {//save didnt happen
-                            Debug.Log("Save didn't go through");
-                        }
-                        GUILayout.Label("Exported tree will be located in /TreeMaster/Exports/", EditorStyles.wordWrappedLabel);
+                        GUILayout.Label("Flowers:", EditorStyles.boldLabel);
+                        EditorGUILayout.Space();
+
+                        flowerVariety = EditorGUILayout.IntSlider("Variety", flowerVariety, 1, 9);//changes mesh UV
+                        SwitchFlowerVariety(flowerVariety);
+                        flowerScale = EditorGUILayout.Slider("Scale", flowerScale, 0.001f, flowersMaxScale);//scaling
+                        ScaleFlowers(flowerScale);
+                        EditorGUILayout.Space();
+                    }
+
+                    addRoots = EditorGUILayout.Toggle("Add Roots?", addRoots);
+                    EnableRoots(addRoots); // make sure we enable all the flowers if we want them
+                    if (addRoots)
+                    {
+                        GUILayout.Label("Roots:", EditorStyles.boldLabel);
+                        EditorGUILayout.Space();
+                        rootsVariety = EditorGUILayout.IntSlider("Variety", rootsVariety, 1, 4);//changes mesh UV
+                        SwitchRootsVariety(rootsVariety);
+                        rootScale = EditorGUILayout.Slider("Roots Scale", rootScale, 0.01f, 3f);//scaling
+                        ScaleRoots(rootScale);
+                        rootsRotation = EditorGUILayout.Slider("Roots Rotate", rootsRotation, -180f, 180f);//scaling
+                        RotateRoots(rootsRotation);
                     }
                 }
+
                 EditorGUILayout.Space();
-                if (GUILayout.Button("Refresh", GUILayout.MaxHeight(50), GUILayout.MinHeight(50)))
-                    Repaint();
+
+                showAnalysis = EditorGUILayout.Foldout(showAnalysis, "Show Mesh Analyis");
+                if (showAnalysis)
+                {
+
+                    totalVertCount = GetTotalVertexCount(Selection.activeGameObject);
+                    if (totalVertCount > 65535)
+                        EditorGUILayout.LabelField($"Total Vertex Count: {totalVertCount.ToString()} MAX is 65,535! Cannot Export!", EditorStyles.boldLabel);
+                    else
+                        EditorGUILayout.LabelField($"Total Vertex Count: {totalVertCount.ToString()}", EditorStyles.boldLabel);
+                    EditorGUILayout.Space();
+                    EditorGUILayout.Space();
+                    GUILayout.Label($"Draw Calls on Current: {GetDrawCallsOnCurrent(Selection.activeGameObject)}", EditorStyles.boldLabel);
+                    EditorGUILayout.Space();
+                    GUILayout.Label("To properly examine draw calls, it's best to have only one object in your scene!", EditorStyles.label);
+                    GUILayout.Label("It also calculates properly with the Game View being active", EditorStyles.label);
+                    EditorGUILayout.Space();
+                    if (GUILayout.Button(!sceneConfiguredForDrawCalls ? "Configure Scene to Analyze Draw Calls" : "Restore Scene", GUILayout.MaxHeight(30), GUILayout.MinHeight(30)))
+                    {
+                        ConfigureSceneForDrawCalls();
+                        sceneConfiguredForDrawCalls = !sceneConfiguredForDrawCalls;
+                    }
+
+                    EditorGUILayout.Space();
+
+                }
+
+                EditorGUILayout.Space();
+
+                showExport = EditorGUILayout.Foldout(showExport, "Show Exporter");
+                if (showExport)
+                {
+                    GUILayout.Label("Export", EditorStyles.boldLabel);
+                    EditorGUILayout.Space();
+
+                    if (addFlowers)
+                    {
+                        GUILayout.BeginHorizontal("box");
+                        if (GUILayout.Button("Reduce Flower Count by Quarter?", GUILayout.MaxHeight(30), GUILayout.MinHeight(30)))
+                            ReduceCurrentMeshCountByHalf(true, 4);
+                        if (GUILayout.Button("Reduce Flower Count by Half?", GUILayout.MaxHeight(30), GUILayout.MinHeight(30)))
+                            ReduceCurrentMeshCountByHalf(true, 2);
+                        GUILayout.EndHorizontal();
+                    }
+
+
+                    EditorGUILayout.Space();
+                    GUILayout.BeginHorizontal("box");
+                    if (GUILayout.Button("Reduce Foliage Count by Quarter?", GUILayout.MaxHeight(30), GUILayout.MinHeight(30)))
+                        ReduceCurrentMeshCountByHalf(false, 4);
+
+                    if (GUILayout.Button("Reduce Foliage Count by Half?", GUILayout.MaxHeight(30), GUILayout.MinHeight(30)))
+                        ReduceCurrentMeshCountByHalf(false, 2);
+
+                    GUILayout.EndHorizontal();
+
+
+
+                    EditorGUILayout.Space();
+                    changeName = EditorGUILayout.Toggle("Change Prefab Tree name?", changeName);
+                    if (changeName)
+                    {
+
+                        GUILayout.BeginVertical("box", GUILayout.ExpandHeight(false), GUILayout.ExpandWidth(true));
+
+                        newName = EditorGUILayout.TextField("Change Name to:", newName == string.Empty ? placeholder : newName);
+                        GUILayout.EndVertical();
+                        EditorGUILayout.Space();
+                    }
+                    else
+                        newName = tempName;
+
+
+
+                    EditorGUILayout.Space();
+                    if (GUILayout.Button("Save this Tree Prefab", GUILayout.MaxHeight(30), GUILayout.MinHeight(30)))
+                        SaveNewPrefab();
+
+                    EditorGUILayout.Space();
+                    if (totalVertCount < 65535)
+                    {
+                        if (GUILayout.Button("Export Collapsed Mesh for Terrains", GUILayout.MaxHeight(30), GUILayout.MinHeight(30)))
+                        {
+                            if (ExportForTerrain(true, newName))// if save was successful
+                            {
+                                newName = string.Empty;
+                                tempName = string.Empty;
+                            }
+                            else
+                            {//save didnt happen
+                                Debug.Log("Save didn't go through");
+                            }
+                            GUILayout.Label("Exported tree will be located in /TreeMaster/Exports/", EditorStyles.wordWrappedLabel);
+                        }
+                    }
+
+                    if (GUILayout.Button("Save as New Tree Template", GUILayout.MaxHeight(30), GUILayout.MinHeight(30)))
+                        SaveNewTreeTemplate();
+                    EditorGUILayout.Space();
+
+                }
             }
 
         }
@@ -419,7 +441,7 @@ public class TM_ChangeMesh : EditorWindow
     }
     private int GetDrawCallsOnCurrent(GameObject activeGameObject)
     {
-        return UnityStats.setPassCalls;
+        return UnityStats.setPassCalls - 1;// remove 1 for the engine
     }
 
     private void SaveNewTreeTemplate()
@@ -434,7 +456,11 @@ public class TM_ChangeMesh : EditorWindow
         // format the new tre name
         selected.name = currentNumberCount > 9 ? "Tree_" + currentNumberCount : "Tree_0" + currentNumberCount;
         prefabPath = prefabPathBase + "/" + selected.name + ".prefab";
-        PrefabUtility.SaveAsPrefabAsset(selected, prefabPath);
+        GameObject savedTemplate = PrefabUtility.SaveAsPrefabAsset(selected, prefabPath);
+        if (savedTemplate != null)
+            Debug.Log("Exported New Tree Template: " + selected.name + " successfully!");
+        else
+            Debug.LogWarning("Failed to Export New Tree Template :( ");
     }
 
     private void AddControllerToTrunk()
@@ -830,6 +856,12 @@ public class TM_ChangeMesh : EditorWindow
             prefabPath = optimizedPath + "/" + newNameForTree + ".prefab";
 
             GameObject successObject = PrefabUtility.SaveAsPrefabAsset(go, prefabPath);
+
+            if (successObject != null)
+                Debug.Log("Exported New Terrain Ready Tree: " + newNameForTree + " successfully!");
+            else
+                Debug.LogWarning("Failed to Export New Terrain Tree :( ");
+
             //finally remove the newly added renderer and mesh filter from the tree master controller
             if (isTreeMasterHierarchy)
             {
@@ -916,7 +948,12 @@ public class TM_ChangeMesh : EditorWindow
         else
             prefabPath = prefabPathBase + "/" + selected.name + ".prefab";
 
-        PrefabUtility.SaveAsPrefabAsset(selected, prefabPath);
+        GameObject successObject = PrefabUtility.SaveAsPrefabAsset(selected, prefabPath);
+
+        if (successObject != null)
+            Debug.Log("Saved New Prefab: " + successObject.name + " successfully!");
+        else
+            Debug.LogWarning("Failed to Export New Prefab :(");
     }
 
     #region Scaling

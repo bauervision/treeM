@@ -10,11 +10,9 @@ namespace TreeMaster
 
         #region Main Menu Tools
 
-        [MenuItem("Tools/TreeMaster/Switch Mesh", false, 30)]
+        [MenuItem("Tools/TreeMaster/Edit Tree", false, 10)]
         private static void ShowToolSwitchMesh() { TM_ChangeMesh.ShowWindow(); }
 
-        [MenuItem("Tools/TreeMaster/Swap Material", false, 30)]
-        private static void ShowToolSwapMaterial() { TM_SwapMaterial.ShowWindow(); }
 
         [MenuItem("Tools/TreeMaster/Collapse Mesh", false, 30)]
         private static void ShowToolNewOptimized() { TM_CollapseMesh.ShowWindow(); }
