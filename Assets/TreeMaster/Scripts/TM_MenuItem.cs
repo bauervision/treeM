@@ -272,388 +272,73 @@ namespace TreeMaster
 
         #region Branches
 
-        [MenuItem("GameObject/TreeMaster/Branches/Acacia/1", false, 50)]
+        [MenuItem("GameObject/TreeMaster/Branches/Acacia", false, 50)]
         private static void CreateBranchAcacia1()
         {
             GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/ABranch1", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
             PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
             Selection.activeGameObject = newObj;
         }
-        [MenuItem("GameObject/TreeMaster/Branches/Acacia/2", false, 50)]
-        private static void CreateBranchAcacia2()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/ABranch2", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Acacia/3", false, 50)]
-        private static void CreateBranchAcacia3()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/ABranch3", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Acacia/4", false, 50)]
-        private static void CreateBranchAcacia4()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/ABranch4", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Acacia/5", false, 50)]
-        private static void CreateBranchAcacia5()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/ABranch5", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Acacia/6", false, 50)]
-        private static void CreateBranchAcacia6()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/ABranch6", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Acacia/7", false, 50)]
-        private static void CreateBranchAcacia7()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/ABranch7", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Acacia/8", false, 50)]
-        private static void CreateBranchAcacia8()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/ABranch8", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
 
 
-        [MenuItem("GameObject/TreeMaster/Branches/Cypress/1", false, 50)]
+        [MenuItem("GameObject/TreeMaster/Branches/Cypress", false, 50)]
         private static void CreateBranchCypress1()
         {
             GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/CBranch1", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
             PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
             Selection.activeGameObject = newObj;
         }
-        [MenuItem("GameObject/TreeMaster/Branches/Cypress/2", false, 50)]
-        private static void CreateBranchCypress2()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/CBranch2", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Cypress/3", false, 50)]
-        private static void CreateBranchCypress3()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/CBranch3", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Cypress/4", false, 50)]
-        private static void CreateBranchCypress4()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/CBranch4", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Cypress/5", false, 50)]
-        private static void CreateBranchCypress5()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/CBranch5", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Cypress/6", false, 50)]
-        private static void CreateBranchCypress6()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/CBranch6", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Cypress/7", false, 50)]
-        private static void CreateBranchCypress7()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/CBranch7", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
 
-        [MenuItem("GameObject/TreeMaster/Branches/Drooping/1", false, 50)]
+        [MenuItem("GameObject/TreeMaster/Branches/Drooping", false, 50)]
         private static void CreateBranchDrooping1()
         {
             GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/DBranch1", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
             PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
             Selection.activeGameObject = newObj;
         }
-        [MenuItem("GameObject/TreeMaster/Branches/Drooping/2", false, 50)]
-        private static void CreateBranchDrooping2()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/DBranch2", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Drooping/3", false, 50)]
-        private static void CreateBranchDrooping3()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/DBranch3", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
 
-        [MenuItem("GameObject/TreeMaster/Branches/Gnarly/1", false, 50)]
+        [MenuItem("GameObject/TreeMaster/Branches/Gnarly", false, 50)]
         private static void CreateBranchGnarly1()
         {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/GBranch01", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Gnarly/2", false, 50)]
-        private static void CreateBranchGnarly2()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/GBranch02", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Gnarly/3", false, 50)]
-        private static void CreateBranchGnarly3()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/GBranch03", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Gnarly/4", false, 50)]
-        private static void CreateBranchGnarly4()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/GBranch04", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Gnarly/5", false, 50)]
-        private static void CreateBranchGnarly5()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/GBranch05", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Gnarly/6", false, 50)]
-        private static void CreateBranchGnarly6()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/GBranch06", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Gnarly/7", false, 50)]
-        private static void CreateBranchGnarly7()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/GBranch07", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Gnarly/8", false, 50)]
-        private static void CreateBranchGnarly8()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/GBranch08", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Gnarly/9", false, 50)]
-        private static void CreateBranchGnarly9()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/GBranch09", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
+            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/GBranch1", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
             PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
             Selection.activeGameObject = newObj;
         }
 
-        [MenuItem("GameObject/TreeMaster/Branches/Kapok/1", false, 50)]
+        [MenuItem("GameObject/TreeMaster/Branches/Kapok", false, 50)]
         private static void CreateBranchKapok1()
         {
             GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/KBranch1", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
             PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
             Selection.activeGameObject = newObj;
         }
-        [MenuItem("GameObject/TreeMaster/Branches/Kapok/2", false, 50)]
-        private static void CreateBranchKapok2()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/KBranch2", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Kapok/3", false, 50)]
-        private static void CreateBranchKapok3()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/KBranch3", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Kapok/4", false, 50)]
-        private static void CreateBranchKapok4()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/KBranch4", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Kapok/5", false, 50)]
-        private static void CreateBranchKapok5()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/KBranch5", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
 
-        [MenuItem("GameObject/TreeMaster/Branches/Maple/1", false, 50)]
+        [MenuItem("GameObject/TreeMaster/Branches/Maple", false, 50)]
         private static void CreateBranchMaple1()
         {
             GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/MBranch1", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
             PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
             Selection.activeGameObject = newObj;
         }
-        [MenuItem("GameObject/TreeMaster/Branches/Maple/2", false, 50)]
-        private static void CreateBranchMaple2()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/MBranch2", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Maple/3", false, 50)]
-        private static void CreateBranchMaple3()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/MBranch3", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Maple/4", false, 50)]
-        private static void CreateBranchMaple4()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/MBranch4", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Maple/5", false, 50)]
-        private static void CreateBranchMaple5()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/MBranch5", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Maple/6", false, 50)]
-        private static void CreateBranchMaple6()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/MBranch6", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Maple/7", false, 50)]
-        private static void CreateBranchMaple7()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/MBranch7", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
 
-        [MenuItem("GameObject/TreeMaster/Branches/Pine/1", false, 50)]
+        [MenuItem("GameObject/TreeMaster/Branches/Pine", false, 50)]
         private static void CreateBranchPine1()
         {
             GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/PBranch1", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
             PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
             Selection.activeGameObject = newObj;
         }
-        [MenuItem("GameObject/TreeMaster/Branches/Pine/2", false, 50)]
-        private static void CreateBranchPine2()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/PBranch2", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Pine/3", false, 50)]
-        private static void CreateBranchPine3()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/PBranch3", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Pine/4", false, 50)]
-        private static void CreateBranchPine4()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/PBranch4", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Pine/5", false, 50)]
-        private static void CreateBranchPine5()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/PBranch5", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Pine/6", false, 50)]
-        private static void CreateBranchPine6()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/PBranch6", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
 
-        [MenuItem("GameObject/TreeMaster/Branches/Redwood/1", false, 50)]
+
+        [MenuItem("GameObject/TreeMaster/Branches/Redwood", false, 50)]
         private static void CreateBranchRedwood1()
         {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/RW_Branch1", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
+            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/RWBranch1", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
             PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
             Selection.activeGameObject = newObj;
         }
 
-        [MenuItem("GameObject/TreeMaster/Branches/Redwood/2", false, 50)]
-        private static void CreateBranchRedwood2()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/RW_Branch2", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Redwood/3", false, 50)]
-        private static void CreateBranchRedwood3()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/RW_Branch3", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Redwood/4", false, 50)]
-        private static void CreateBranchRedwood4()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/RW_Branch4", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Redwood/5", false, 50)]
-        private static void CreateBranchRedwood5()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/RW_Branch5", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Redwood/6", false, 50)]
-        private static void CreateBranchRedwood6()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/RW_Branch6", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Redwood/7", false, 50)]
-        private static void CreateBranchRedwood7()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/RW_Branch7", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Redwood/8", false, 50)]
-        private static void CreateBranchRedwood8()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/RW_Branch8", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-
-        [MenuItem("GameObject/TreeMaster/Branches/Thin/1", false, 50)]
+        [MenuItem("GameObject/TreeMaster/Branches/Thin", false, 50)]
         private static void CreateBranchThin1()
         {
             GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/Thin_Branch1", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
@@ -661,48 +346,6 @@ namespace TreeMaster
             Selection.activeGameObject = newObj;
         }
 
-        [MenuItem("GameObject/TreeMaster/Branches/Thin/2", false, 50)]
-        private static void CreateBranchThin2()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/Thin_Branch2", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Thin/3", false, 50)]
-        private static void CreateBranchThin3()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/Thin_Branch3", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Thin/4", false, 50)]
-        private static void CreateBranchThin4()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/Thin_Branch4", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Thin/5", false, 50)]
-        private static void CreateBranchThin5()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/Thin_Branch5", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Thin/6", false, 50)]
-        private static void CreateBranchThin6()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/Thin_Branch6", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
-        [MenuItem("GameObject/TreeMaster/Branches/Thin/7", false, 50)]
-        private static void CreateBranchThin7()
-        {
-            GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load("Branches/Thin_Branch7", typeof(GameObject)), (Selection.activeGameObject != null) ? Selection.activeGameObject.transform : null) as GameObject;
-            PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            Selection.activeGameObject = newObj;
-        }
         #endregion
 
         #endregion

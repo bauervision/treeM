@@ -12,9 +12,9 @@ using UnityEditor;
 [ExecuteInEditMode]
 public class TM_ChangeMesh : EditorWindow
 {
-    private bool addFlowers;
-    private int variety = 1, flowerVariety = 1, leafMaterial = 1, trunk = 1, bark = 1;
-    private int varietyOld = 0, leavesOld = 1, trunkOld = 1, rootsOld = 0, ivyOld = 0, ivyVarietyOld = 1, vinesOld = 0, vineVarietyOld = 1, barkOld = 1, lichenOld = 0;
+    private bool addFlowers, adjustPrefabVariety, adjustVariety;
+    private int variety = 1, flowerVariety = 1, leafMaterial = 1, trunk = 1, bark = 1, prefabVariety = 1;
+    private int varietyOld = 0, leavesOld = 1, trunkOld = 1, barkOld = 1, branchOld = 1;
 
 
     static string trunkStarter = "T!K_t01_b01_l00_r00";
@@ -35,18 +35,12 @@ public class TM_ChangeMesh : EditorWindow
     private float flowerScale = 1, oldFlowerScale = 1;
     private float trunkScale = 1, oldTrunkScale = 1;
     private float trunkRotation = 1, oldTrunkRotation = 1;
-    private float oldIvyScale = 1;
-    private float oldVineScale = 1;
-
-
 
     float trunkMaxScale = 5f;
 
     int foliageVarietyOptions = 64;
     float foliageMaxScale = 2f;
     float flowersMaxScale = 2f;
-
-
 
 
     Vector2 scrollPos;
@@ -73,11 +67,12 @@ public class TM_ChangeMesh : EditorWindow
 
     }
 
-    string[] branchTypes = new string[] { "TM_Trunk", "ABranch", "CBranch", "DBranch", "GBranch", "KBranch", "MBranch", "PBranch", "RWBranch", "SBranch", "Thin_Branch" };
+    string[] branchTypes = new string[] { "TM_Trunk", "ABranch", "CBranch", "DBranch", "GBranch", "KBranch", "MBranch", "PBranch", "RWBranch", "SBranch", "Thin_Branch", "BranchMask" };
 
-    int[] branchOptionCount = new int[] { 19, 8, 7, 3, 9, 6, 7, 6, 8, 8, 7 };
+    int[] branchOptionCount = new int[] { 19, 8, 6, 3, 9, 5, 7, 6, 8, 8, 7, 9 };
 
     int selectionMesh = 0;
+    int selectionPrefab = 1;
 
     bool sceneConfiguredForDrawCalls = false;
     private static EditorWindow gameWindow;
@@ -88,6 +83,9 @@ public class TM_ChangeMesh : EditorWindow
     bool showAnalysis = false;
     bool showExport = false;
     int totalVertCount;
+
+    int currentFoliageVariety = 1;
+
     void OnGUI()
     {
         scrollPos = GUILayout.BeginScrollView(scrollPos);
@@ -97,8 +95,6 @@ public class TM_ChangeMesh : EditorWindow
 
         if (Selection.activeGameObject)
         {
-
-
 
             // verify that we are selected on A TreeMaster Mesh before running any of the following methods
             if (Selection.activeGameObject.name != "TreeMaster")
@@ -111,65 +107,88 @@ public class TM_ChangeMesh : EditorWindow
                 {
                     GUILayout.Label(branchTypes[selectionStatus] + " Selected", EditorStyles.boldLabel);
                     EditorGUILayout.Space();
-                    GUILayout.Label("This selection has " + branchOptionCount[selectionStatus] + " additional meshes", EditorStyles.label);
+                    GUILayout.Label("This selection has " + branchOptionCount[selectionStatus] + " additional options", EditorStyles.label);
                     EditorGUILayout.Space();
                     if (Selection.activeGameObject.transform.childCount > 0)
-                        GUILayout.Label("NOTE: this will change the placement of all foliage children, you may need to adjust them afterwards", EditorStyles.wordWrappedLabel);
-
-                    int currentMeshIndex = GetCurrentMeshIndex();
-                    selectionMesh = EditorGUILayout.IntSlider("Mesh Selection", currentMeshIndex, 1, branchOptionCount[selectionStatus]);//changes mesh
-                    SwitchSelectionMesh(selectionMesh);
-
-                    // if we are selected on a trunk, provide the option to add the controller easily
-                    if (selectionStatus == 0)
                     {
-                        EditorGUILayout.Space();
-                        if (GUILayout.Button("Add Tree Master Controller?", GUILayout.MaxHeight(50), GUILayout.MinHeight(50)))
-                            AddControllerToTrunk();
+                        //GUILayout.Label("NOTE: this will change the placement of all foliage children, you may need to adjust them afterwards", EditorStyles.wordWrappedLabel);
+                        // in this situation, we need to check to see if this is one of our branch prefabs and do a whole swap out
 
-                        EditorGUILayout.Space();
-                        EditorGUILayout.Space();
-
-
-                        changeName = EditorGUILayout.Toggle("Change Tree name?", changeName);
-                        if (changeName)
+                        // if we are selected on a trunk, provide the option to add the controller easily
+                        if (selectionStatus == 0)
                         {
+                            EditorGUILayout.Space();
+                            if (GUILayout.Button("Add Tree Master Controller?", GUILayout.MaxHeight(50), GUILayout.MinHeight(50)))
+                                AddControllerToTrunk();
 
-                            GUILayout.BeginVertical("box", GUILayout.ExpandHeight(false), GUILayout.ExpandWidth(true));
-
-                            newName = EditorGUILayout.TextField("Change Name to:", newName == Selection.activeGameObject.name ? placeholder : newName);
-                            GUILayout.EndVertical();
                             EditorGUILayout.Space();
                         }
-                        else
-                            newName = Selection.activeGameObject.name;
-
-                        EditorGUILayout.Space();
-                        if (GUILayout.Button("Save " + newName + " as a prefab", GUILayout.MaxHeight(30), GUILayout.MinHeight(30)))
-                            SaveNewPrefab();
-
-                        EditorGUILayout.Space();
-                        int totalVertCount = GetTotalVertexCount(Selection.activeGameObject);
-                        if (totalVertCount < 65535)
+                        else if (selectionStatus != 11)// if it is any option other than the BranchMask
                         {
-                            if (GUILayout.Button("Export " + newName + " for Terrains", GUILayout.MaxHeight(30), GUILayout.MinHeight(30)))
+                            int currentPrefabIndex = GetCurrentMeshIndex();
+                            selectionPrefab = EditorGUILayout.IntSlider("Prefab Selection", currentPrefabIndex, 1, branchOptionCount[selectionStatus]);//changes mesh
+                            SwitchBranch(selectionPrefab, branchTypes[selectionStatus]);
+                            EditorGUILayout.Space();
+                            adjustPrefabVariety = EditorGUILayout.Toggle("Adjust Variety?", adjustPrefabVariety);
+                            if (adjustPrefabVariety)
                             {
-                                if (ExportForTerrain(false, newName))// if save was successful
-                                {
-                                    newName = string.Empty;
-                                    tempName = string.Empty;
-                                }
-                                else
-                                {//save didnt happen
-                                    Debug.Log("Save didn't go through");
-                                }
-                                GUILayout.Label("Exported tree will be located in /TreeMaster/Exports/", EditorStyles.wordWrappedLabel);
+                                int currentPrefabFoliageVariety = GetCurrentFoliageIndex();
+                                prefabVariety = EditorGUILayout.IntSlider("Variety", currentPrefabFoliageVariety, 1, foliageVarietyOptions);//changes mesh UV
                             }
+                            EditorGUILayout.Space();
+                            addFlowers = EditorGUILayout.Toggle("Add Flowers?", addFlowers);
+                            EnablePrefabFlowers(addFlowers); // make sure we enable all the flowers if we want them
+
+                            SwitchPrefabVariety(prefabVariety);
+
+
                         }
 
-
+                    }
+                    else// this object doesn't have any children so we can just swap out the single mesh
+                    {
+                        int currentMeshIndex = GetCurrentMeshIndex();
+                        selectionMesh = EditorGUILayout.IntSlider("Mesh Selection", currentMeshIndex, 1, branchOptionCount[selectionStatus]);//changes mesh
+                        SwitchSelectionMesh(selectionMesh);
                     }
 
+                    EditorGUILayout.Space();
+
+                    changeName = EditorGUILayout.Toggle("Change Tree name?", changeName);
+                    if (changeName)
+                    {
+
+                        GUILayout.BeginVertical("box", GUILayout.ExpandHeight(false), GUILayout.ExpandWidth(true));
+
+                        newName = EditorGUILayout.TextField("Change Name to:", newName == Selection.activeGameObject.name ? placeholder : newName);
+                        GUILayout.EndVertical();
+                        EditorGUILayout.Space();
+                    }
+                    else
+                        newName = Selection.activeGameObject.name;
+
+                    EditorGUILayout.Space();
+                    if (GUILayout.Button("Save " + newName + " as a prefab", GUILayout.MaxHeight(30), GUILayout.MinHeight(30)))
+                        SaveNewPrefab();
+
+                    EditorGUILayout.Space();
+                    int totalVertCount = GetTotalVertexCount(Selection.activeGameObject);
+                    if (totalVertCount < 65535)
+                    {
+                        if (GUILayout.Button("Export " + newName + " for Terrains", GUILayout.MaxHeight(30), GUILayout.MinHeight(30)))
+                        {
+                            if (ExportForTerrain(false, newName))// if save was successful
+                            {
+                                newName = string.Empty;
+                                tempName = string.Empty;
+                            }
+                            else
+                            {//save didnt happen
+                                Debug.Log("Save didn't go through");
+                            }
+                            GUILayout.Label("Exported tree will be located in /TreeMaster/Exports/", EditorStyles.wordWrappedLabel);
+                        }
+                    }
 
                 }
                 else
@@ -215,6 +234,10 @@ public class TM_ChangeMesh : EditorWindow
 
                 }
 
+                EditorGUILayout.Space();
+                if (GUILayout.Button("Select Parent Tree Master Controller?", GUILayout.MaxHeight(30), GUILayout.MinHeight(30)))
+                    Selection.activeGameObject = Selection.activeGameObject.transform.root.gameObject;
+
             }
             else
             {
@@ -233,7 +256,9 @@ public class TM_ChangeMesh : EditorWindow
                     GUILayout.Label("Trunk:", EditorStyles.boldLabel);
                     bark = EditorGUILayout.IntSlider("Bark", bark, 1, GetTotalCount("Assets/TreeMaster/Resources/Materials/Barks"));//changes material
                     SwitchBark(bark);
-                    trunkScale = EditorGUILayout.Slider("Trunk Scale", trunkScale, 0.01f, trunkMaxScale);//scaling
+                    // get the initial scaling of the trunk
+                    float initialTrunkScale = Selection.activeGameObject.transform.GetChild(0).transform.localScale.x;
+                    trunkScale = EditorGUILayout.Slider("Trunk Scale", initialTrunkScale, 0.01f, trunkMaxScale);//scaling
                     ScaleTrunk(trunkScale);
                     trunkRotation = EditorGUILayout.Slider("Trunk Rotate", trunkRotation, -180f, 180f);//scaling
                     RotateTrunk(trunkRotation);
@@ -241,12 +266,15 @@ public class TM_ChangeMesh : EditorWindow
 
                     GUILayout.Label("Foliage:", EditorStyles.boldLabel);
                     EditorGUILayout.Space();
-                    int currentFoliageVariety = GetCurrentFoliageIndex();
-                    variety = EditorGUILayout.IntSlider("Variety", currentFoliageVariety, 1, foliageVarietyOptions);//changes mesh UV
-                    SwitchVariety(variety);
-                    leafMaterial = EditorGUILayout.IntSlider("Leaf Material", leafMaterial, 1, GetTotalCount("Assets/TreeMaster/Resources/Materials/Leaves"));//changes material
-                    SwitchLeafMaterial(leafMaterial);
-
+                    adjustVariety = EditorGUILayout.Toggle("Adjust Variety?", adjustVariety);
+                    if (adjustVariety)
+                    {
+                        currentFoliageVariety = GetCurrentFoliageIndex();
+                        variety = EditorGUILayout.IntSlider("Variety", currentFoliageVariety, 1, foliageVarietyOptions);//changes mesh UV
+                        SwitchVariety(variety);
+                        leafMaterial = EditorGUILayout.IntSlider("Leaf Material", leafMaterial, 1, GetTotalCount("Assets/TreeMaster/Resources/Materials/Leaves"));//changes material
+                        SwitchLeafMaterial(leafMaterial);
+                    }
                     leafScale = EditorGUILayout.Slider("Foliage Scale", leafScale, 0.001f, foliageMaxScale);//scaling
                     ScaleLeaves(leafScale);
                     EditorGUILayout.Space();
@@ -346,7 +374,7 @@ public class TM_ChangeMesh : EditorWindow
 
                         GUILayout.BeginVertical("box", GUILayout.ExpandHeight(false), GUILayout.ExpandWidth(true));
 
-                        newName = EditorGUILayout.TextField("Change Name to:", newName == string.Empty ? placeholder : newName);
+                        newName = EditorGUILayout.TextField("Change Name to:", string.IsNullOrEmpty(newName) ? tempName : newName);
                         GUILayout.EndVertical();
                         EditorGUILayout.Space();
                     }
@@ -393,6 +421,7 @@ public class TM_ChangeMesh : EditorWindow
         GUILayout.EndVertical();
         GUILayout.EndScrollView();
     }
+
 
     private void ConfigureSceneForDrawCalls()
     {
@@ -473,9 +502,9 @@ public class TM_ChangeMesh : EditorWindow
         Selection.activeGameObject = newObj;
     }
 
+    ///<summary> Grab the last 2 characters off the name </summary>
     private int GetCurrentMeshIndex()
     {
-        // grab the last 2 characters off the name
         MeshFilter mf = Selection.activeGameObject.GetComponent<MeshFilter>();
         // store the name of this current mesh
         string currentMeshName = mf.sharedMesh.name;
@@ -492,8 +521,6 @@ public class TM_ChangeMesh : EditorWindow
             bool successSingle = int.TryParse(lastChar, out singleMeshNumber);
             return singleMeshNumber;
         }
-
-
     }
 
     private int GetCurrentTreeIndex()
@@ -604,13 +631,10 @@ public class TM_ChangeMesh : EditorWindow
         // if this gameobject has a mesh filter assigned, handle the swap
         if (mf != null)
         {
-            //branchTypes.ToList().FindIndex(0, 1, Selection.activeGameObject.name)
             if (mf.sharedMesh.name.StartsWith("TM_Trunk"))
                 status = 0;
-
             else if (mf.sharedMesh.name.StartsWith("ABranch"))
                 status = 1;
-
             else if (mf.sharedMesh.name.StartsWith("CBranch"))
                 status = 2;
             else if (mf.sharedMesh.name.StartsWith("DBranch"))
@@ -623,18 +647,14 @@ public class TM_ChangeMesh : EditorWindow
                 status = 6;
             else if (mf.sharedMesh.name.StartsWith("PBranch"))
                 status = 7;
-            else if (mf.sharedMesh.name.StartsWith("RWBranch"))
+            else if (mf.sharedMesh.name.StartsWith("RW_Branch"))
                 status = 8;
             else if (mf.sharedMesh.name.StartsWith("SBranch"))
                 status = 9;
             else if (mf.sharedMesh.name.StartsWith("Thin_Branch"))
                 status = 10;
-            else if (mf.sharedMesh.name.StartsWith("BranchMask"))
+            else// if (mf.sharedMesh.name.StartsWith("BranchMask"))
                 status = 11;
-
-
-
-
         }
         return status;
     }
@@ -958,25 +978,6 @@ public class TM_ChangeMesh : EditorWindow
 
     #region Scaling
 
-
-    private void ScaleIvy(float ivyScaleValue)
-    {
-        if (oldIvyScale != ivyScaleValue)
-        {
-            Selection.activeGameObject.transform.GetChild(0).transform.GetChild(2).transform.localScale = new Vector3(ivyScaleValue, ivyScaleValue, ivyScaleValue);
-            oldIvyScale = ivyScaleValue;
-        }
-    }
-
-    private void ScaleVine(float vineScaleValue)
-    {
-        if (oldVineScale != vineScaleValue)
-        {
-            Selection.activeGameObject.transform.GetChild(0).transform.GetChild(1).transform.localScale = new Vector3(vineScaleValue, vineScaleValue, vineScaleValue);
-            oldVineScale = vineScaleValue;
-        }
-    }
-
     private void ScaleTrunk(float trunkScaleValue)
     {
         if (oldTrunkScale != trunkScaleValue)
@@ -1020,6 +1021,21 @@ public class TM_ChangeMesh : EditorWindow
         }
     }
 
+    private void EnablePrefabFlowers(bool addFlowers)
+    {
+        // once we have reduced the flowers, stop re-activating them
+        if (!flowersReduced)
+        {
+            List<MeshRenderer> allFlowerRenderers = new List<MeshRenderer>();
+            Selection.activeGameObject.transform.GetComponentsInChildren<MeshRenderer>(true, allFlowerRenderers);
+
+            if (allFlowerRenderers != null)
+                foreach (MeshRenderer renderer in allFlowerRenderers)
+                    if (renderer.sharedMaterial.name.StartsWith("Flowers"))
+                        renderer.transform.gameObject.SetActive(addFlowers);
+        }
+    }
+
 
     private void ScaleFlowers(float flowerScaleValue)
     {
@@ -1045,13 +1061,23 @@ public class TM_ChangeMesh : EditorWindow
 
     #region Foliage
 
-
     public void SwitchVariety(int newVariety)
     {
 
         string varietyString = newVariety < 10 ? "0" + newVariety : newVariety.ToString();
         // now jump down to the foliage object
         GameObject foliageObj = Selection.activeGameObject.transform.GetChild(0).transform.GetChild(0).gameObject;
+
+        //make sure we have branches to loop through
+        if (foliageObj.transform.childCount > 0)
+            LoopThroughChildrenMesh(foliageObj, varietyString);
+    }
+
+    public void SwitchPrefabVariety(int newVariety)
+    {
+        string varietyString = newVariety < 10 ? "0" + newVariety : newVariety.ToString();
+        // now jump down to the foliage object
+        GameObject foliageObj = Selection.activeGameObject;
 
         //make sure we have branches to loop through
         if (foliageObj.transform.childCount > 0)
@@ -1165,22 +1191,15 @@ public class TM_ChangeMesh : EditorWindow
     #endregion
 
     #region Trunks
-    private void SwitchRoots(int newRoots)
-    {
-        if (newRoots != rootsOld)
-        {
-            trunkString = newTrunkMeshName = GetNewVersionName(trunkString, 'r', newRoots);
-            rootsOld = newRoots;
-        }
-    }
 
-    private void SwitchLichen(int newLichen)
+    private void SwitchBranch(int newBranch, string prefabName)
     {
-        if (newLichen != lichenOld)
+        if (newBranch != branchOld)
         {
-            trunkString = newTrunkMeshName = GetNewVersionName(trunkString, 'l', newLichen);
-            lichenOld = newLichen;
+            SwitchPrefabBranchVersion(prefabName, newBranch.ToString());
+            branchOld = newBranch;
         }
+
     }
 
     private void SwitchTrunk(int newTrunk)
@@ -1295,38 +1314,6 @@ public class TM_ChangeMesh : EditorWindow
         }
     }
 
-
-
-    #region Extras
-    private void SwitchIvyVariety(int newIvyVariety)
-    {
-
-        if (newIvyVariety != ivyVarietyOld)
-        {
-            extrasString = newExtraMeshName = GetNewVersionName(extrasString, 'l', newIvyVariety);
-            ivyVarietyOld = newIvyVariety;
-        }
-    }
-
-    private void SwitchVineVariety(int newVineVariety)
-    {
-        if (newVineVariety != vineVarietyOld)
-        {
-            extrasString = newExtraMeshName = GetNewVersionName(extrasString, 'k', newVineVariety);
-            vineVarietyOld = newVineVariety;
-        }
-    }
-
-    private void SwitchIvy(int newIvy)
-    {
-        if (newIvy != ivyOld)
-        {
-            extrasString = newExtraMeshName = GetNewVersionName(extrasString, 'i', newIvy);
-            ivyOld = newIvy;
-        }
-    }
-    #endregion
-
     private int GetTotalVertexCount(GameObject selectedObject)
     {
         MeshRenderer[] meshRenderers = selectedObject.GetComponentsInChildren<MeshRenderer>(false);
@@ -1365,23 +1352,15 @@ public class TM_ChangeMesh : EditorWindow
         return finalName;
     }
 
+    void SwitchPrefabBranchVersion(string prefabName, string newVersion)
+    {
+        ChangeBranchPrefab(prefabName, newVersion);
+    }
 
     public void SwitchTrunkVersion(string newVersion)
     {
-        flowersReduced = false;
-        // only switch on the trunk mesh
         ChangeTreePrefab(newVersion);
     }
-
-    private void SwitchVines(int newVines)
-    {
-        if (newVines != vinesOld)
-        {
-            extrasString = newExtraMeshName = GetNewVersionName(extrasString, 'v', newVines);
-            vinesOld = newVines;
-        }
-    }
-
 
 
     private void ChangeTreePrefab(string newVersion)
@@ -1395,6 +1374,21 @@ public class TM_ChangeMesh : EditorWindow
         PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
         // set the parent
         newObj.transform.parent = Selection.activeGameObject.transform;
+    }
+
+    private void ChangeBranchPrefab(string prefabName, string newVersion)
+    {
+        // get the new tree name
+        string newTreePrefab = $"Branches/{prefabName}{newVersion}";
+
+        //load the prefab
+        GameObject newObj = PrefabUtility.InstantiatePrefab(Resources.Load(newTreePrefab, typeof(GameObject)), Selection.activeGameObject.transform.parent) as GameObject;
+        PrefabUtility.UnpackPrefabInstance(newObj, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+        newObj.transform.localPosition = Selection.activeGameObject.transform.localPosition;
+        newObj.transform.localRotation = Selection.activeGameObject.transform.localRotation;
+        newObj.transform.localScale = Selection.activeGameObject.transform.localScale;
+        DestroyImmediate(Selection.activeGameObject);
+        Selection.activeGameObject = newObj;
     }
 
 }
